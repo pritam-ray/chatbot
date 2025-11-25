@@ -1,9 +1,44 @@
-import { User, Bot } from 'lucide-react';
+import { useState } from 'react';
+import { User, Bot, Copy, Check } from 'lucide-react';
 import { Message } from '../services/azureOpenAI';
 import { formatText, renderMarkdown } from '../utils/markdown';
 
 interface ChatMessageProps {
   message: Message;
+}
+
+function CodeBlock({ content, itemKey }: { content: string; itemKey: number }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy code:', err);
+    }
+  };
+
+  return (
+    <div key={itemKey} className="relative group my-4">
+      <button
+        onClick={handleCopy}
+        className="absolute top-3 right-3 p-2.5 bg-slate-700/80 hover:bg-slate-600 rounded-xl transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+        title={copied ? 'Copied!' : 'Copy code'}
+        aria-label={copied ? 'Code copied' : 'Copy code to clipboard'}
+      >
+        {copied ? (
+          <Check className="w-4 h-4 text-green-400" />
+        ) : (
+          <Copy className="w-4 h-4 text-slate-300" />
+        )}
+      </button>
+      <pre className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 p-6 rounded-2xl overflow-x-auto text-sm font-mono border border-slate-700/50 shadow-2xl ring-1 ring-white/5">
+        <code>{content}</code>
+      </pre>
+    </div>
+  );
 }
 
 function RenderFormattedContent({ content }: { content: string }) {
@@ -19,20 +54,13 @@ function RenderFormattedContent({ content }: { content: string }) {
           case 'heading':
             const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-xs'];
             return (
-              <div key={item.key} className={`${sizes[item.level - 1]} font-bold mt-4 mb-2 text-slate-800`}>
+              <div key={item.key} className={`${sizes[item.level - 1]} font-bold mt-6 mb-3 bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 bg-clip-text text-transparent`}>
                 <span dangerouslySetInnerHTML={{ __html: formatText(item.content) }} />
               </div>
             );
 
           case 'codeblock':
-            return (
-              <pre
-                key={item.key}
-                className="bg-gradient-to-br from-slate-800 via-slate-800 to-slate-700 text-slate-100 p-5 rounded-xl overflow-x-auto text-sm font-mono my-4 border border-slate-600 shadow-lg"
-              >
-                <code>{item.content}</code>
-              </pre>
-            );
+            return <CodeBlock key={item.key} content={item.content} itemKey={item.key} />;
 
           case 'bullet':
             return (
@@ -54,7 +82,7 @@ function RenderFormattedContent({ content }: { content: string }) {
             return (
               <div
                 key={item.key}
-                className="border-l-4 border-slate-400 pl-5 py-3 text-slate-700 italic bg-gradient-to-r from-slate-50 to-slate-100/50 my-3 rounded-r-lg shadow-sm"
+                className="border-l-4 border-gradient-to-b from-blue-400 to-indigo-500 pl-6 py-4 text-slate-700 italic bg-gradient-to-r from-slate-50/80 via-blue-50/30 to-transparent my-4 rounded-r-xl shadow-md backdrop-blur-sm"
               >
                 <span dangerouslySetInnerHTML={{ __html: formatText(item.content) }} />
               </div>
@@ -79,16 +107,16 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`flex gap-4 p-6 ${isUser ? 'bg-gradient-to-r from-slate-50 to-blue-50/40 border-l-4 border-slate-300' : 'bg-white border-l-4 border-blue-400/60 shadow-sm'}`}>
+    <div className={`flex gap-5 p-6 transition-all ${isUser ? 'bg-gradient-to-r from-slate-50/80 via-blue-50/30 to-transparent border-l-4 border-slate-300/70' : 'bg-white/60 backdrop-blur-sm border-l-4 border-gradient-to-b from-blue-400 to-indigo-400 shadow-md hover:shadow-lg transition-shadow'}`}>
       <div
-        className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center flex-none shadow-lg ${
-          isUser ? 'bg-gradient-to-br from-slate-400 to-blue-400' : 'bg-gradient-to-br from-slate-500 to-blue-500'
+        className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center flex-none shadow-xl ring-2 ring-white/30 transition-transform hover:scale-105 ${
+          isUser ? 'bg-gradient-to-br from-slate-500 via-blue-500 to-indigo-500' : 'bg-gradient-to-br from-slate-600 via-blue-600 to-indigo-600'
         }`}
       >
-        {isUser ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
+        {isUser ? <User className="w-5 h-5 text-white drop-shadow" /> : <Bot className="w-5 h-5 text-white drop-shadow" />}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="font-bold text-sm text-slate-700 mb-2">
+        <div className="font-bold text-sm bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-3">
           {isUser ? 'You' : 'AI Assistant'}
         </div>
         <div className="text-slate-700 leading-relaxed">

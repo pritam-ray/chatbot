@@ -7,7 +7,7 @@ export function formatText(text: string) {
   formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
   formatted = formatted.replace(/_(.+?)_/g, '<em>$1</em>');
   formatted = formatted.replace(/~~(.+?)~~/g, '<del>$1</del>');
-  formatted = formatted.replace(/`([^`]+)`/g, '<code style="background-color: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; font-weight: 500;">$1</code>');
+  formatted = formatted.replace(/`([^`]+)`/g, '<code style="background: linear-gradient(to right, #f1f5f9, #e0f2fe); color: #475569; padding: 3px 8px; border-radius: 6px; font-family: monospace; font-size: 0.9em; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">$1</code>');
 
   return formatted;
 }
