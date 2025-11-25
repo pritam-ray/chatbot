@@ -1,6 +1,7 @@
 export interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  displayContent?: string; // Optional: content to display in UI (without file data)
 }
 
 export interface ChatCompletionChunk {

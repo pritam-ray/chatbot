@@ -17,10 +17,11 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (content: string, fileInfo?: string) => {
+  const handleSendMessage = async (content: string, displayContent?: string, fileName?: string) => {
     const userMessage: Message = {
       role: 'user',
-      content,
+      content, // Full content for API
+      displayContent: displayContent || content, // Display content for UI
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -57,11 +58,11 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      <header className="bg-gradient-to-r from-blue-600 to-blue-700 border-b border-blue-800 shadow-lg">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
+      <header className="bg-gradient-to-r from-slate-700 via-slate-600 to-blue-600 border-b border-slate-700/50 shadow-xl">
         <div className="max-w-4xl mx-auto px-4 py-5 flex items-center gap-3">
-          <MessageSquare className="w-7 h-7 text-white" />
-          <h1 className="text-2xl font-bold text-white tracking-tight">AI Chatbot</h1>
+          <MessageSquare className="w-7 h-7 text-white drop-shadow-md" />
+          <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-sm">AI Chatbot</h1>
         </div>
       </header>
 
@@ -69,13 +70,13 @@ function App() {
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-6 p-8">
-              <div className="inline-flex p-6 bg-blue-100 rounded-full shadow-lg">
-                <MessageSquare className="w-20 h-20 text-blue-600" />
+              <div className="inline-flex p-6 bg-gradient-to-br from-slate-100 to-blue-100 rounded-full shadow-xl">
+                <MessageSquare className="w-20 h-20 text-slate-600" />
               </div>
-              <h2 className="text-3xl font-bold text-blue-900">
+              <h2 className="text-3xl font-bold text-slate-800">
                 Start a conversation
               </h2>
-              <p className="text-blue-700 max-w-md text-lg">
+              <p className="text-slate-600 max-w-md text-lg">
                 Ask me anything! I'm powered by Azure OpenAI and ready to help you.
               </p>
             </div>
@@ -86,18 +87,18 @@ function App() {
               <ChatMessage key={index} message={message} />
             ))}
             {isLoading && messages[messages.length - 1]?.content === '' && (
-              <div className="flex gap-4 p-6 bg-white border-l-4 border-blue-500 shadow-sm">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+              <div className="flex gap-4 p-6 bg-white border-l-4 border-slate-400 shadow-sm">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-slate-500 to-blue-500 flex items-center justify-center shadow-md">
                   <MessageSquare className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <div className="font-bold text-sm text-blue-900 mb-2">
+                  <div className="font-bold text-sm text-slate-700 mb-2">
                     AI Assistant
                   </div>
                   <div className="flex gap-1">
-                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                   </div>
                 </div>
               </div>
