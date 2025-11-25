@@ -18,7 +18,11 @@ renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
 
 // Override table rendering for custom styling
 renderer.table = (token: any) => {
-  return `<div class="table-wrapper"><table class="markdown-table"><thead>${token.header}</thead><tbody>${token.rows}</tbody></table></div>`;
+  const header = `<tr>${token.header.map((cell: any) => `<th>${cell.text}</th>`).join('')}</tr>`;
+  const rows = token.rows.map((row: any) => 
+    `<tr>${row.map((cell: any) => `<td>${cell.text}</td>`).join('')}</tr>`
+  ).join('');
+  return `<div class="table-wrapper"><table class="markdown-table"><thead>${header}</thead><tbody>${rows}</tbody></table></div>`;
 };
 
 marked.use({ renderer });
