@@ -1,105 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User, Bot, Copy, Check } from 'lucide-react';
 import { Message } from '../services/azureOpenAI';
-import { formatText, renderMarkdown } from '../utils/markdown';
+import { renderMarkdownToHTML } from '../utils/markdown';
+import 'katex/dist/katex.min.css';
 
 interface ChatMessageProps {
   message: Message;
 }
 
-function CodeBlock({ content, itemKey }: { content: string; itemKey: number }) {
-  const [copied, setCopied] = useState(false);
+function MarkdownContent({ content }: { content: string }) {
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(content);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy code:', err);
+  useEffect(() => {
+    if (contentRef.current) {
+      // Add copy buttons to code blocks after rendering
+      const codeBlocks = contentRef.current.querySelectorAll('pre.code-block');
+      
+      codeBlocks.forEach((block, index) => {
+        const codeElement = block.querySelector('code');
+        if (!codeElement) return;
+        
+        // Check if copy button already exists
+        if (block.querySelector('.copy-button')) return;
+        
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-button absolute top-3 right-3 p-2.5 bg-slate-700/80 hover:bg-slate-600 rounded-xl transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-110 active:scale-95';
+        copyButton.setAttribute('aria-label', 'Copy code to clipboard');
+        copyButton.innerHTML = `<svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`;
+        
+        copyButton.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(codeElement.textContent || '');
+            copyButton.innerHTML = `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            setTimeout(() => {
+              copyButton.innerHTML = `<svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`;
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy:', err);
+          }
+        });
+        
+        // Wrap pre in relative container for absolute positioning
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative group';
+        block.parentNode?.insertBefore(wrapper, block);
+        wrapper.appendChild(block);
+        wrapper.appendChild(copyButton);
+      });
     }
-  };
+  }, [content]);
+
+  const html = renderMarkdownToHTML(content);
 
   return (
-    <div key={itemKey} className="relative group my-4">
-      <button
-        onClick={handleCopy}
-        className="absolute top-3 right-3 p-2.5 bg-slate-700/80 hover:bg-slate-600 rounded-xl transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
-        title={copied ? 'Copied!' : 'Copy code'}
-        aria-label={copied ? 'Code copied' : 'Copy code to clipboard'}
-      >
-        {copied ? (
-          <Check className="w-4 h-4 text-green-400" />
-        ) : (
-          <Copy className="w-4 h-4 text-slate-300" />
-        )}
-      </button>
-      <pre className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 p-6 rounded-2xl overflow-x-auto text-sm font-mono border border-slate-700/50 shadow-2xl ring-1 ring-white/5">
-        <code>{content}</code>
-      </pre>
-    </div>
-  );
-}
-
-function RenderFormattedContent({ content }: { content: string }) {
-  const parsed = renderMarkdown(content);
-
-  return (
-    <>
-      {parsed.map((item: any) => {
-        switch (item.type) {
-          case 'empty':
-            return <div key={item.key} className="h-3" />;
-
-          case 'heading':
-            const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-xs'];
-            return (
-              <div key={item.key} className={`${sizes[item.level - 1]} font-bold mt-6 mb-3 bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 bg-clip-text text-transparent`}>
-                <span dangerouslySetInnerHTML={{ __html: formatText(item.content) }} />
-              </div>
-            );
-
-          case 'codeblock':
-            return <CodeBlock key={item.key} content={item.content} itemKey={item.key} />;
-
-          case 'bullet':
-            return (
-              <div key={item.key} className="ml-6 flex gap-3 my-1">
-                <span className="text-slate-500 mt-0.5 font-bold">•</span>
-                <span dangerouslySetInnerHTML={{ __html: formatText(item.content) }} />
-              </div>
-            );
-
-          case 'numbered':
-            return (
-              <div key={item.key} className="ml-6 flex gap-3 my-1">
-                <span className="text-slate-500 font-bold">{item.number}.</span>
-                <span dangerouslySetInnerHTML={{ __html: formatText(item.content) }} />
-              </div>
-            );
-
-          case 'blockquote':
-            return (
-              <div
-                key={item.key}
-                className="border-l-4 border-gradient-to-b from-blue-400 to-indigo-500 pl-6 py-4 text-slate-700 italic bg-gradient-to-r from-slate-50/80 via-blue-50/30 to-transparent my-4 rounded-r-xl shadow-md backdrop-blur-sm"
-              >
-                <span dangerouslySetInnerHTML={{ __html: formatText(item.content) }} />
-              </div>
-            );
-
-          case 'divider':
-            return <hr key={item.key} className="my-4 border-t-2 border-slate-200" />;
-
-          default:
-            return (
-              <div key={item.key} className="mb-2">
-                <span dangerouslySetInnerHTML={{ __html: formatText(item.content) }} />
-              </div>
-            );
-        }
-      })}
-    </>
+    <div 
+      ref={contentRef}
+      className="markdown-content"
+      dangerouslySetInnerHTML={{ __html: html }} 
+    />
   );
 }
 
@@ -120,7 +78,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           {isUser ? 'You' : 'AI Assistant'}
         </div>
         <div className="text-slate-700 leading-relaxed">
-          {isUser ? (message.displayContent || message.content) : <RenderFormattedContent content={message.content} />}
+          {isUser ? (message.displayContent || message.content) : <MarkdownContent content={message.content} />}
         </div>
       </div>
     </div>

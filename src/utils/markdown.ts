@@ -1,129 +1,109 @@
-export function formatText(text: string) {
-  let formatted = text;
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+import katex from 'katex';
 
-  formatted = formatted.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-  formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  formatted = formatted.replace(/__(.+?)__/g, '<strong>$1</strong>');
-  formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  formatted = formatted.replace(/_(.+?)_/g, '<em>$1</em>');
-  formatted = formatted.replace(/~~(.+?)~~/g, '<del>$1</del>');
-  formatted = formatted.replace(/`([^`]+)`/g, '<code style="background: linear-gradient(to right, #f1f5f9, #e0f2fe); color: #475569; padding: 3px 8px; border-radius: 6px; font-family: monospace; font-size: 0.9em; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">$1</code>');
+// Configure marked options
+marked.setOptions({
+  gfm: true, // GitHub Flavored Markdown
+  breaks: true, // Convert \n to <br>
+});
 
-  return formatted;
+// Custom renderer for better control
+const renderer = new marked.Renderer();
+
+// Override code rendering to add custom classes
+renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
+  return `<pre class="code-block" data-language="${lang || ''}"><code>${text}</code></pre>`;
+};
+
+// Override table rendering for custom styling
+renderer.table = (token: any) => {
+  return `<div class="table-wrapper"><table class="markdown-table"><thead>${token.header}</thead><tbody>${token.rows}</tbody></table></div>`;
+};
+
+marked.use({ renderer });
+
+// Process math expressions in markdown
+function processMathExpressions(text: string): string {
+  const mathExpressions: Array<{ type: 'inline' | 'display'; expr: string }> = [];
+  const mathPlaceholder = '___MATH_EXPR___';
+  
+  let processed = text;
+  
+  // Handle display math ($$...$$) - must be on separate lines or with line breaks
+  processed = processed.replace(/\$\$([^\$]+?)\$\$/gs, (_match, expr) => {
+    mathExpressions.push({ type: 'display', expr: expr.trim() });
+    return `${mathPlaceholder}${mathExpressions.length - 1}${mathPlaceholder}`;
+  });
+  
+  // Handle inline math ($...$) - not crossing line boundaries
+  processed = processed.replace(/\$([^\$\n]+?)\$/g, (_match, expr) => {
+    mathExpressions.push({ type: 'inline', expr: expr.trim() });
+    return `${mathPlaceholder}${mathExpressions.length - 1}${mathPlaceholder}`;
+  });
+
+  return { processed, mathExpressions } as any;
 }
 
-export function renderMarkdown(content: string) {
-  const lines = content.split('\n');
-  const elements: any[] = [];
-  let codeBlock = '';
-  let inCodeBlock = false;
-  let codeLanguage = '';
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-
-    if (line.startsWith('```')) {
-      if (!inCodeBlock) {
-        inCodeBlock = true;
-        codeLanguage = line.slice(3).trim();
+function restoreMathExpressions(html: string, mathExpressions: Array<{ type: 'inline' | 'display'; expr: string }>): string {
+  const mathPlaceholder = '___MATH_EXPR___';
+  
+  return html.replace(new RegExp(`${mathPlaceholder}(\\d+)${mathPlaceholder}`, 'g'), (_match, index) => {
+    const { type, expr } = mathExpressions[parseInt(index)];
+    try {
+      const rendered = katex.renderToString(expr, {
+        displayMode: type === 'display',
+        throwOnError: false,
+        output: 'html',
+        strict: false,
+        trust: false,
+      });
+      
+      if (type === 'display') {
+        return `<div class="math-display">${rendered}</div>`;
       } else {
-        elements.push({
-          type: 'codeblock',
-          content: codeBlock.trim(),
-          language: codeLanguage,
-          key: elements.length,
-        });
-        codeBlock = '';
-        inCodeBlock = false;
-        codeLanguage = '';
+        return `<span class="math-inline">${rendered}</span>`;
       }
-      i++;
-      continue;
+    } catch (e) {
+      console.error('KaTeX rendering error:', e);
+      // Return original expression if rendering fails
+      return type === 'display' ? `<div class="math-error">$$${expr}$$</div>` : `<span class="math-error">$${expr}$</span>`;
     }
-
-    if (inCodeBlock) {
-      codeBlock += line + '\n';
-      i++;
-      continue;
-    }
-
-    if (line.trim() === '') {
-      if (elements.length > 0 && elements[elements.length - 1].type !== 'empty') {
-        elements.push({
-          type: 'empty',
-          key: elements.length,
-        });
-      }
-      i++;
-      continue;
-    }
-
-    if (line.match(/^#{1,6}\s/)) {
-      const level = line.match(/^#+/)![0].length;
-      const titleContent = line.replace(/^#+\s/, '').trim();
-      elements.push({
-        type: 'heading',
-        level,
-        content: titleContent,
-        key: elements.length,
-      });
-      i++;
-      continue;
-    }
-
-    if (line.match(/^\*\s\*\s\*/) || line.match(/^---+/) || line.match(/^\*\*\*+/)) {
-      elements.push({
-        type: 'divider',
-        key: elements.length,
-      });
-      i++;
-      continue;
-    }
-
-    if (line.match(/^\s*[-*+]\s+/) && !line.startsWith('  ')) {
-      const itemContent = line.replace(/^\s*[-*+]\s+/, '').trim();
-      elements.push({
-        type: 'bullet',
-        content: itemContent,
-        key: elements.length,
-      });
-      i++;
-      continue;
-    }
-
-    if (line.match(/^\s*\d+\.\s+/)) {
-      const match = line.match(/^\s*(\d+)\.\s+(.+)$/);
-      if (match) {
-        elements.push({
-          type: 'numbered',
-          number: match[1],
-          content: match[2],
-          key: elements.length,
-        });
-      }
-      i++;
-      continue;
-    }
-
-    if (line.startsWith('> ')) {
-      const quoteContent = line.replace(/^>\s+/, '').trim();
-      elements.push({
-        type: 'blockquote',
-        content: quoteContent,
-        key: elements.length,
-      });
-      i++;
-      continue;
-    }
-
-    elements.push({
-      type: 'paragraph',
-      content: line,
-      key: elements.length,
-    });
-    i++;
-  }
-
-  return elements;
+  });
 }
+
+// Main function to render markdown with math support
+export function renderMarkdownToHTML(content: string): string {
+  try {
+    // Process math expressions first
+    const { processed, mathExpressions } = processMathExpressions(content) as any;
+    
+    // Parse markdown
+    let html = marked.parse(processed) as string;
+    
+    // Restore math expressions
+    html = restoreMathExpressions(html, mathExpressions);
+    
+    // Sanitize HTML
+    const clean = DOMPurify.sanitize(html, {
+      ADD_TAGS: ['math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'mspace', 'annotation'],
+      ADD_ATTR: ['class', 'style', 'data-language'],
+      ALLOWED_TAGS: [
+        'a', 'b', 'strong', 'i', 'em', 'u', 'strike', 'del', 's', 'code', 'pre',
+        'p', 'br', 'span', 'div', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'hr', 'img', 'sup', 'sub',
+        // KaTeX elements
+        'math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'mspace', 'annotation'
+      ],
+      ALLOWED_ATTR: ['class', 'style', 'href', 'src', 'alt', 'title', 'data-language', 'colspan', 'rowspan'],
+    });
+    
+    return clean;
+  } catch (error) {
+    console.error('Markdown rendering error:', error);
+    return `<p>${content}</p>`;
+  }
+}
+
+
