@@ -5,6 +5,7 @@ import { ChatInput } from './components/ChatInput';
 import { CacheManager } from './components/CacheManager';
 import { ThemeSettings } from './components/ThemeSettings';
 import { ConversationSidebar } from './components/ConversationSidebar';
+import { CodeSandbox } from './components/CodeSandbox';
 import { Message, streamChatCompletion } from './services/azureOpenAI';
 import { getCachedResponse, setCachedResponse, cleanExpiredCache } from './utils/cache';
 import { useTheme } from './contexts/ThemeContext';
@@ -22,6 +23,7 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [isCodeSandboxOpen, setIsCodeSandboxOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toggleTheme } = useTheme();
 
@@ -133,6 +135,13 @@ function App() {
       description: 'New conversation',
       handler: handleNewConversation,
     },
+    {
+      key: 'e',
+      ctrlKey: true,
+      shiftKey: true,
+      description: 'Open code sandbox',
+      handler: () => setIsCodeSandboxOpen(true),
+    },
   ]);
 
   const handleSendMessage = async (content: string, displayContent?: string) => {
@@ -214,6 +223,16 @@ function App() {
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg flex-1">AI Chatbot</h1>
           <nav className="flex items-center gap-2" aria-label="Main navigation">
+            <button
+              onClick={() => setIsCodeSandboxOpen(true)}
+              className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl backdrop-blur-sm transition-all shadow-lg hover:shadow-xl flex items-center gap-2 text-sm font-medium"
+              aria-label="Open JavaScript Sandbox"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+              Sandbox
+            </button>
             <ThemeSettings />
             <CacheManager />
           </nav>
@@ -267,6 +286,14 @@ function App() {
 
       <ChatInput onSend={handleSendMessage} disabled={isLoading} />
       </div>
+
+      {/* Code Sandbox Modal */}
+      {isCodeSandboxOpen && (
+        <CodeSandbox
+          initialCode="// Write your JavaScript code here\nconsole.log('Hello, World!');\n\n// Try these examples:\n// console.log(2 + 2);\n// console.log(['apple', 'banana', 'cherry']);\n// console.log({ name: 'John', age: 30 });"
+          onClose={() => setIsCodeSandboxOpen(false)}
+        />
+      )}
     </div>
   );
 }
