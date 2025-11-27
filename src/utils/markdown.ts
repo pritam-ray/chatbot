@@ -112,14 +112,36 @@ function restoreMathExpressions(html: string, mathExpressions: Array<{ type: 'in
   });
 }
 
+// Preprocess content to fix common AI markdown issues
+function preprocessMarkdown(text: string): string {
+  let processed = text;
+  
+  // Fix broken image syntax: ![alt text]\nhttps://url -> ![alt text](https://url)
+  processed = processed.replace(/!\[([^\]]+)\]\s*\n\s*(https?:\/\/[^\s]+)/gi, '![$1]($2)');
+  
+  // Fix bare image URLs with descriptions on previous line
+  processed = processed.replace(/\[([^\]]+)\]\s*\n\s*(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp|svg))/gi, '![$1]($2)');
+  
+  // Convert standalone image URLs to markdown images (only if they look like images)
+  processed = processed.replace(/^(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp|svg))(\s|$)/gim, '![]($1)$3');
+  
+  // Fix images where URL is on same line but with extra text
+  processed = processed.replace(/!\[([^\]]+)\]\s+(https?:\/\/[^\s]+)/gi, '![$1]($2)');
+  
+  return processed;
+}
+
 // Main function to render markdown with math support
 export function renderMarkdownToHTML(content: string): string {
   try {
-    // Process math expressions first
-    const { processed, mathExpressions } = processMathExpressions(content) as any;
+    // Preprocess to fix common markdown issues
+    let processed = preprocessMarkdown(content);
+    
+    // Process math expressions
+    const { processed: mathProcessed, mathExpressions } = processMathExpressions(processed) as any;
     
     // Parse markdown
-    let html = marked.parse(processed) as string;
+    let html = marked.parse(mathProcessed) as string;
     
     // Restore math expressions
     html = restoreMathExpressions(html, mathExpressions);
