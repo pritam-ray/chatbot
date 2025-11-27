@@ -34,10 +34,39 @@ function processMathExpressions(text: string): string {
   
   let processed = text;
   
+  // Handle display math with \[...\] (LaTeX style)
+  processed = processed.replace(/\\\[([^\]]+?)\\\]/gs, (_match, expr) => {
+    mathExpressions.push({ type: 'display', expr: expr.trim() });
+    return `${mathPlaceholder}${mathExpressions.length - 1}${mathPlaceholder}`;
+  });
+  
+  // Handle display math with [newline]...[newline] (bracket notation on separate lines)
+  processed = processed.replace(/^\[\s*\n([\s\S]+?)\n\s*\]$/gm, (_match, expr) => {
+    mathExpressions.push({ type: 'display', expr: expr.trim() });
+    return `${mathPlaceholder}${mathExpressions.length - 1}${mathPlaceholder}`;
+  });
+  
   // Handle display math ($$...$$) - must be on separate lines or with line breaks
   processed = processed.replace(/\$\$([^\$]+?)\$\$/gs, (_match, expr) => {
     mathExpressions.push({ type: 'display', expr: expr.trim() });
     return `${mathPlaceholder}${mathExpressions.length - 1}${mathPlaceholder}`;
+  });
+  
+  // Handle inline math with \(...\) (LaTeX style)
+  processed = processed.replace(/\\\(([^\)]+?)\\\)/g, (_match, expr) => {
+    mathExpressions.push({ type: 'inline', expr: expr.trim() });
+    return `${mathPlaceholder}${mathExpressions.length - 1}${mathPlaceholder}`;
+  });
+  
+  // Handle inline math with (variable_name) patterns (common in text explanations)
+  // Only match if it contains LaTeX-like syntax (backslash, subscript, superscript, etc.)
+  processed = processed.replace(/\(([^)]*[_^\\{}][^)]*)\)/g, (match, expr) => {
+    // Check if it looks like math (has LaTeX syntax)
+    if (/[_^\\{}]|\\text|\\frac|\\times|\\cdot/.test(expr)) {
+      mathExpressions.push({ type: 'inline', expr: expr.trim() });
+      return `${mathPlaceholder}${mathExpressions.length - 1}${mathPlaceholder}`;
+    }
+    return match; // Not math, keep as-is
   });
   
   // Handle inline math ($...$) - not crossing line boundaries
