@@ -3,13 +3,20 @@ import { MessageSquare } from 'lucide-react';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import { CacheManager } from './components/CacheManager';
+import { ThemeSettings } from './components/ThemeSettings';
+import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp';
 import { Message, streamChatCompletion } from './services/azureOpenAI';
 import { getCachedResponse, setCachedResponse, cleanExpiredCache } from './utils/cache';
+import { useTheme } from './contexts/ThemeContext';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { toggleTheme } = useTheme();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -23,6 +30,43 @@ function App() {
   useEffect(() => {
     cleanExpiredCache();
   }, []);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 't',
+      ctrlKey: true,
+      shiftKey: true,
+      description: 'Toggle theme',
+      handler: toggleTheme,
+    },
+    {
+      key: '/',
+      ctrlKey: true,
+      description: 'Focus input',
+      handler: () => {
+        const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+        input?.focus();
+      },
+    },
+    {
+      key: 'c',
+      ctrlKey: true,
+      shiftKey: true,
+      description: 'Clear chat',
+      handler: () => {
+        if (window.confirm('Clear all messages?')) {
+          setMessages([]);
+        }
+      },
+    },
+    {
+      key: '?',
+      ctrlKey: true,
+      description: 'Show keyboard shortcuts',
+      handler: () => setShowShortcuts(true),
+    },
+  ]);
 
   const handleSendMessage = async (content: string, displayContent?: string, fileName?: string) => {
     const userMessage: Message = {
@@ -85,21 +129,25 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30">
-      <header className="bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 backdrop-blur-sm border-b border-white/10 shadow-2xl relative">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <header className="bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 backdrop-blur-sm border-b border-white/10 shadow-2xl relative" role="banner">
         <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
         <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-4 relative z-10">
-          <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
+          <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm" aria-hidden="true">
             <MessageSquare className="w-6 h-6 text-white drop-shadow-lg" />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg flex-1">AI Chatbot</h1>
-          <CacheManager />
+          <nav className="flex items-center gap-2" aria-label="Main navigation">
+            <KeyboardShortcutsHelp />
+            <ThemeSettings />
+            <CacheManager />
+          </nav>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto" role="main" aria-label="Chat conversation">
         {messages.length === 0 ? (
-          <div className="h-full flex items-center justify-center">
+          <div className="h-full flex items-center justify-center" role="region" aria-label="Welcome screen">
             <div className="text-center space-y-8 p-10">
               <div className="inline-flex p-8 bg-gradient-to-br from-slate-100 via-blue-100 to-indigo-100 rounded-3xl shadow-2xl ring-1 ring-slate-200/50 relative">
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent rounded-3xl"></div>

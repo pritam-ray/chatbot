@@ -116,10 +116,18 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="border-t border-slate-200/50 bg-white/80 backdrop-blur-xl p-6 shadow-2xl relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-50/50 to-transparent pointer-events-none"></div>
+      <form 
+        onSubmit={handleSubmit} 
+        className="border-t border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-6 shadow-2xl relative"
+        aria-label="Message input form"
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-50/50 dark:from-slate-900/50 to-transparent pointer-events-none"></div>
       {attachedFile && (
-        <div className="max-w-4xl mx-auto mb-4 flex items-center justify-between bg-gradient-to-r from-slate-100/80 via-blue-50/50 to-indigo-50/30 p-4 rounded-2xl border border-slate-200/50 shadow-lg backdrop-blur-sm relative z-10">
+        <div 
+          className="max-w-4xl mx-auto mb-4 flex items-center justify-between bg-slate-100/80 dark:bg-slate-700/80 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-600/50 shadow-lg backdrop-blur-sm relative z-10"
+          role="status"
+          aria-label="Attached file"
+        >
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${isTableFile ? 'bg-green-100' : 'bg-white/60'}`}>
               {isTableFile ? (
@@ -169,8 +177,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled || isExtractingFile}
-          className="p-3.5 text-slate-600 hover:bg-white/80 rounded-2xl transition-all disabled:text-gray-400 disabled:cursor-not-allowed border border-slate-200/50 hover:border-slate-300 hover:shadow-lg backdrop-blur-sm bg-white/60 group"
-          title="Attach file"
+          className="p-3.5 text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/80 rounded-2xl transition-all disabled:text-gray-400 disabled:cursor-not-allowed border border-slate-200/50 dark:border-slate-600/50 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-lg backdrop-blur-sm bg-white/60 dark:bg-slate-800/60 group"
+          title="Attach file (PDF, TXT, CSV, XLSX)"
+          aria-label="Attach file"
         >
           <Paperclip className="w-5 h-5 transition-transform group-hover:rotate-12" />
         </button>
@@ -182,7 +191,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           accept=".pdf,.txt,.md,.doc,.docx,.csv,.xlsx,.xls"
           className="hidden"
           aria-label="Upload file"
+          aria-describedby="file-types-description"
         />
+        <span id="file-types-description" className="sr-only">
+          Supported file types: PDF, TXT, MD, DOC, DOCX, CSV, XLSX, XLS
+        </span>
 
         <input
           type="text"
@@ -190,16 +203,18 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
           disabled={disabled || isExtractingFile}
-          className="flex-1 px-5 py-3.5 border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm placeholder-slate-400 bg-white/60 backdrop-blur-sm hover:bg-white/80 focus:bg-white"
+          className="flex-1 px-5 py-3.5 border border-slate-200/50 dark:border-slate-600/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition-all shadow-sm placeholder-slate-400 dark:placeholder-slate-500 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-slate-700/80 focus:bg-white dark:focus:bg-slate-700 text-slate-800 dark:text-slate-100"
+          aria-label="Message input"
         />
 
         <button
           type="submit"
           disabled={disabled || (!input.trim() && !fileContent) || isExtractingFile}
-          className="px-8 py-3.5 bg-gradient-to-r from-slate-700 via-blue-600 to-indigo-600 text-white rounded-2xl hover:from-slate-800 hover:via-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all flex items-center gap-2.5 font-semibold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+          className="px-8 py-3.5 bg-gradient-to-r from-slate-700 via-blue-600 to-indigo-600 dark:from-slate-600 dark:via-blue-700 dark:to-indigo-700 text-white rounded-2xl hover:from-slate-800 hover:via-blue-700 hover:to-indigo-700 dark:hover:from-slate-700 dark:hover:via-blue-800 dark:hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all flex items-center gap-2.5 font-semibold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+          aria-label="Send message"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-          <Send className="w-5 h-5 relative z-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" aria-hidden="true"></div>
+          <Send className="w-5 h-5 relative z-10" aria-hidden="true" />
           <span className="relative z-10">Send</span>
         </button>
       </div>

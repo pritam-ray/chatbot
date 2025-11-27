@@ -2,36 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark mode variables */
+:root {
+  --theme-primary: 59 130 246;
+  --theme-secondary: 99 102 241;
+  --theme-accent: 139 92 246;
+}
+
+.theme-ocean {
+  --theme-primary: 8 145 178;
+  --theme-secondary: 6 182 212;
+  --theme-accent: 20 184 166;
+}
+
+.theme-sunset {
+  --theme-primary: 249 115 22;
+  --theme-secondary: 236 72 153;
+  --theme-accent: 244 63 94;
+}
+
+.theme-forest {
+  --theme-primary: 34 197 94;
+  --theme-secondary: 16 185 129;
+  --theme-accent: 5 150 105;
+}
+
+.theme-midnight {
+  --theme-primary: 124 58 237;
+  --theme-secondary: 139 92 246;
+  --theme-accent: 167 139 250;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 /* Markdown content styling */
 .markdown-content {
-  @apply text-slate-700 leading-relaxed;
+  @apply text-slate-700 dark:text-slate-300 leading-relaxed;
 }
 
 /* Headings */
 .markdown-content h1 {
-  @apply text-3xl font-bold mt-6 mb-4 bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 bg-clip-text text-transparent;
+  @apply text-3xl font-bold mt-6 mb-4 text-slate-800 dark:text-slate-100;
 }
 
 .markdown-content h2 {
-  @apply text-2xl font-bold mt-6 mb-3 bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 bg-clip-text text-transparent;
+  @apply text-2xl font-bold mt-6 mb-3 text-slate-800 dark:text-slate-100;
 }
 
 .markdown-content h3 {
-  @apply text-xl font-bold mt-5 mb-3 bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 bg-clip-text text-transparent;
+  @apply text-xl font-bold mt-5 mb-3 text-slate-800 dark:text-slate-100;
 }
 
 .markdown-content h4 {
-  @apply text-lg font-bold mt-4 mb-2 text-slate-800;
+  @apply text-lg font-bold mt-4 mb-2 text-slate-800 dark:text-slate-100;
 }
 
 .markdown-content h5,
 .markdown-content h6 {
-  @apply text-base font-bold mt-4 mb-2 text-slate-800;
+  @apply text-base font-bold mt-4 mb-2 text-slate-800 dark:text-slate-100;
 }
 
 /* Paragraphs */
 .markdown-content p {
-  @apply mb-3 text-slate-700;
+  @apply mb-3 text-slate-700 dark:text-slate-300;
 }
 
 /* Lists */
@@ -44,22 +82,22 @@
 }
 
 .markdown-content li {
-  @apply text-slate-700;
+  @apply text-slate-700 dark:text-slate-300;
 }
 
 /* Links */
 .markdown-content a {
-  @apply text-blue-600 hover:text-blue-800 underline;
+  @apply text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline;
 }
 
 /* Inline code */
 .markdown-content code:not(pre code) {
-  @apply px-2 py-0.5 bg-gradient-to-r from-slate-100 to-blue-50 text-slate-700 rounded border border-slate-200 text-sm font-mono;
+  @apply px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded border border-slate-200 dark:border-slate-600 text-sm font-mono;
 }
 
 /* Code blocks */
 .markdown-content pre.code-block {
-  @apply my-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 p-6 rounded-2xl overflow-x-auto text-sm font-mono border border-slate-700/50 shadow-2xl ring-1 ring-white/5;
+  @apply my-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-100 p-6 rounded-2xl overflow-x-auto text-sm font-mono border border-slate-700/50 dark:border-slate-700 shadow-2xl ring-1 ring-white/5;
 }
 
 .markdown-content pre.code-block code {
@@ -68,12 +106,12 @@
 
 /* Blockquotes */
 .markdown-content blockquote {
-  @apply border-l-4 border-blue-400 pl-6 py-4 my-4 italic bg-gradient-to-r from-slate-50/80 via-blue-50/30 to-transparent rounded-r-xl shadow-md;
+  @apply border-l-4 border-blue-400 dark:border-blue-600 pl-6 py-4 my-4 italic bg-slate-50/80 dark:bg-slate-800/50 rounded-r-xl shadow-md;
 }
 
 /* Horizontal rules */
 .markdown-content hr {
-  @apply my-6 border-t-2 border-slate-200;
+  @apply my-6 border-t-2 border-slate-200 dark:border-slate-700;
 }
 
 /* Tables */
@@ -82,27 +120,27 @@
 }
 
 .markdown-content .markdown-table {
-  @apply min-w-full border-collapse bg-white;
+  @apply min-w-full border-collapse bg-white dark:bg-slate-800;
 }
 
 .markdown-content .markdown-table thead {
-  @apply bg-gradient-to-r from-slate-100 to-blue-50;
+  @apply bg-slate-100 dark:bg-slate-700;
 }
 
 .markdown-content .markdown-table th {
-  @apply px-4 py-3 text-left font-bold text-slate-800 border-b-2 border-slate-300;
+  @apply px-4 py-3 text-left font-bold text-slate-800 dark:text-slate-100 border-b-2 border-slate-300 dark:border-slate-600;
 }
 
 .markdown-content .markdown-table td {
-  @apply px-4 py-3 text-slate-700 border-b border-slate-200;
+  @apply px-4 py-3 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700;
 }
 
 .markdown-content .markdown-table tbody tr:nth-child(even) {
-  @apply bg-slate-50/50;
+  @apply bg-slate-50/50 dark:bg-slate-900/30;
 }
 
 .markdown-content .markdown-table tbody tr:hover {
-  @apply bg-blue-50/30;
+  @apply bg-blue-50/30 dark:bg-blue-900/20;
 }
 
 /* Math equation styling */
@@ -162,15 +200,29 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  @apply bg-slate-100 dark:bg-slate-800;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  @apply bg-slate-300 dark:bg-slate-600;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  @apply bg-slate-400 dark:bg-slate-500;
+}
+
+/* Dark mode base styles */
+.dark {
+  color-scheme: dark;
+}
+
+html.dark {
+  @apply bg-slate-900;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-blue-500 dark:outline-blue-400;
 }

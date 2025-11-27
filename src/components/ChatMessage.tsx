@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { User, Bot, Copy, Check } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { User, Bot } from 'lucide-react';
 import { Message } from '../services/azureOpenAI';
 import { renderMarkdownToHTML } from '../utils/markdown';
 import 'katex/dist/katex.min.css';
@@ -16,7 +16,7 @@ function MarkdownContent({ content }: { content: string }) {
       // Add copy buttons to code blocks after rendering
       const codeBlocks = contentRef.current.querySelectorAll('pre.code-block');
       
-      codeBlocks.forEach((block, index) => {
+      codeBlocks.forEach((block) => {
         const codeElement = block.querySelector('code');
         if (!codeElement) return;
         
@@ -65,19 +65,30 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`flex gap-5 p-6 transition-all ${isUser ? 'bg-gradient-to-r from-slate-50/80 via-blue-50/30 to-transparent border-l-4 border-slate-300/70' : 'bg-white/60 backdrop-blur-sm border-l-4 border-gradient-to-b from-blue-400 to-indigo-400 shadow-md hover:shadow-lg transition-shadow'}`}>
+    <div 
+      className={`flex gap-5 p-6 transition-all ${
+        isUser 
+          ? 'bg-slate-50/80 dark:bg-slate-800/50 border-l-4 border-slate-300/70 dark:border-slate-600/70' 
+          : 'bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border-l-4 border-blue-400 dark:border-blue-600 shadow-md hover:shadow-lg dark:shadow-slate-900/30 transition-shadow'
+      }`}
+      role="article"
+      aria-label={isUser ? 'User message' : 'AI Assistant message'}
+    >
       <div
-        className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center flex-none shadow-xl ring-2 ring-white/30 transition-transform hover:scale-105 ${
-          isUser ? 'bg-gradient-to-br from-slate-500 via-blue-500 to-indigo-500' : 'bg-gradient-to-br from-slate-600 via-blue-600 to-indigo-600'
+        className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center flex-none shadow-xl ring-2 ring-white/30 dark:ring-slate-700/30 transition-transform hover:scale-105 ${
+          isUser 
+            ? 'bg-gradient-to-br from-slate-500 via-blue-500 to-indigo-500 dark:from-slate-600 dark:via-blue-600 dark:to-indigo-600' 
+            : 'bg-gradient-to-br from-slate-600 via-blue-600 to-indigo-600 dark:from-slate-700 dark:via-blue-700 dark:to-indigo-700'
         }`}
+        aria-hidden="true"
       >
         {isUser ? <User className="w-5 h-5 text-white drop-shadow" /> : <Bot className="w-5 h-5 text-white drop-shadow" />}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="font-bold text-sm bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-3">
+        <div className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-3">
           {isUser ? 'You' : 'AI Assistant'}
         </div>
-        <div className="text-slate-700 leading-relaxed">
+        <div className="text-slate-700 dark:text-slate-300 leading-relaxed">
           {isUser ? (message.displayContent || message.content) : <MarkdownContent content={message.content} />}
         </div>
       </div>
