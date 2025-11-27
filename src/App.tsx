@@ -1,32 +1,102 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import { CacheManager } from './components/CacheManager';
 import { ThemeSettings } from './components/ThemeSettings';
+import { ConversationSidebar } from './components/ConversationSidebar';
 import { Message, streamChatCompletion } from './services/azureOpenAI';
 import { getCachedResponse, setCachedResponse, cleanExpiredCache } from './utils/cache';
 import { useTheme } from './contexts/ThemeContext';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import {
+  generateId,
+  saveConversation,
+  getConversation,
+  getActiveConversationId,
+  setActiveConversationId,
+  Conversation,
+} from './utils/storage';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toggleTheme } = useTheme();
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
+
+  // Save conversation whenever messages change
+  const saveCurrentConversation = useCallback(() => {
+    if (messages.length === 0) return;
+    
+    const conversationId = currentConversationId || generateId();
+    
+    // Generate title from first user message
+    const firstUserMessage = messages.find(m => m.role === 'user');
+    const title = firstUserMessage
+      ? firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? '...' : '')
+      : 'New Conversation';
+    
+    const conversation: Conversation = {
+      id: conversationId,
+      title,
+      messages,
+      createdAt: currentConversationId ? (getConversation(conversationId)?.createdAt || Date.now()) : Date.now(),
+      updatedAt: Date.now(),
+    };
+    
+    saveConversation(conversation);
+    
+    if (!currentConversationId) {
+      setCurrentConversationId(conversationId);
+      setActiveConversationId(conversationId);
+    }
+  }, [messages, currentConversationId]);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+    saveCurrentConversation();
+  }, [messages, scrollToBottom, saveCurrentConversation]);
 
-  // Clean expired cache on mount
+  // Clean expired cache on mount and load active conversation
   useEffect(() => {
     cleanExpiredCache();
+    
+    // Load active conversation
+    const activeId = getActiveConversationId();
+    if (activeId) {
+      const conversation = getConversation(activeId);
+      if (conversation) {
+        setCurrentConversationId(conversation.id);
+        setMessages(conversation.messages);
+      }
+    }
   }, []);
+
+  // Handler functions - must be defined before useKeyboardShortcuts
+  const handleNewConversation = () => {
+    setMessages([]);
+    setCurrentConversationId(null);
+    setActiveConversationId(null);
+  };
+
+  const handleSelectConversation = (id: string | null) => {
+    if (!id) {
+      handleNewConversation();
+      return;
+    }
+    
+    const conversation = getConversation(id);
+    if (conversation) {
+      setMessages(conversation.messages);
+      setCurrentConversationId(conversation.id);
+      setActiveConversationId(conversation.id);
+    }
+  };
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
@@ -53,13 +123,19 @@ function App() {
       description: 'Clear chat',
       handler: () => {
         if (window.confirm('Clear all messages?')) {
-          setMessages([]);
+          handleNewConversation();
         }
       },
     },
+    {
+      key: 'n',
+      ctrlKey: true,
+      description: 'New conversation',
+      handler: handleNewConversation,
+    },
   ]);
 
-  const handleSendMessage = async (content: string, displayContent?: string, fileName?: string) => {
+  const handleSendMessage = async (content: string, displayContent?: string) => {
     const userMessage: Message = {
       role: 'user',
       content, // Full content for API
@@ -120,8 +196,17 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <header className="bg-gradient-to-r from-slate-800 via-theme-primary to-theme-secondary dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 backdrop-blur-sm border-b border-white/10 dark:border-slate-800 shadow-2xl relative" role="banner">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      {/* Conversation Sidebar */}
+      <ConversationSidebar
+        activeConversationId={currentConversationId}
+        onSelectConversation={handleSelectConversation}
+        onNewConversation={handleNewConversation}
+      />
+
+      {/* Main Chat Area */}
+      <div className="flex flex-col flex-1">
+        <header className="bg-gradient-to-r from-slate-800 via-theme-primary to-theme-secondary dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 backdrop-blur-sm border-b border-white/10 dark:border-slate-800 shadow-2xl relative" role="banner">
         <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
         <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-4 relative z-10">
           <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm" aria-hidden="true">
@@ -181,6 +266,7 @@ function App() {
       </main>
 
       <ChatInput onSend={handleSendMessage} disabled={isLoading} />
+      </div>
     </div>
   );
 }
