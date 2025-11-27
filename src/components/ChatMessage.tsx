@@ -68,8 +68,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
     <div 
       className={`flex gap-5 p-6 transition-all ${
         isUser 
-          ? 'bg-slate-50/80 dark:bg-slate-800/50 border-l-4 border-slate-300/70 dark:border-slate-600/70' 
-          : 'bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border-l-4 border-theme-primary dark:border-theme-primary shadow-md hover:shadow-lg dark:shadow-slate-900/30 transition-shadow'
+          ? 'bg-slate-50/80 dark:bg-slate-800/40 border-l-4 border-slate-300/70 dark:border-slate-600/50' 
+          : 'bg-white/60 dark:bg-slate-800/80 backdrop-blur-sm border-l-4 border-theme-primary dark:border-theme-primary/80 shadow-md hover:shadow-lg dark:shadow-slate-950/50 transition-shadow'
       }`}
       role="article"
       aria-label={isUser ? 'User message' : 'AI Assistant message'}

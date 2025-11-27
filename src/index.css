@@ -51,38 +51,45 @@
 }
 
 .markdown-content h2 {
-  @apply text-2xl font-bold mt-6 mb-3 text-slate-800 dark:text-slate-100;
+  @apply text-2xl font-bold mt-6 mb-3 text-slate-700 dark:text-slate-200;
 }
 
 .markdown-content h3 {
-  @apply text-xl font-bold mt-5 mb-3 text-slate-800 dark:text-slate-100;
+  @apply text-xl font-bold mt-5 mb-3 text-slate-700 dark:text-slate-200;
 }
 
 .markdown-content h4 {
-  @apply text-lg font-bold mt-4 mb-2 text-slate-800 dark:text-slate-100;
+  @apply text-lg font-bold mt-4 mb-2 text-slate-700 dark:text-slate-300;
 }
 
 .markdown-content h5,
 .markdown-content h6 {
-  @apply text-base font-bold mt-4 mb-2 text-slate-800 dark:text-slate-100;
+  @apply text-base font-bold mt-4 mb-2 text-slate-700 dark:text-slate-300;
 }
 
 /* Paragraphs */
 .markdown-content p {
-  @apply mb-3 text-slate-700 dark:text-slate-300;
+  @apply mb-4 text-slate-700 dark:text-slate-300 leading-relaxed;
 }
 
 /* Lists */
 .markdown-content ul {
-  @apply list-disc list-inside mb-3 space-y-1;
+  @apply list-disc list-inside mb-3 space-y-1 text-slate-700 dark:text-slate-300;
 }
 
 .markdown-content ol {
-  @apply list-decimal list-inside mb-3 space-y-1;
+  @apply list-decimal list-inside mb-3 space-y-1 text-slate-700 dark:text-slate-300;
 }
 
 .markdown-content li {
   @apply text-slate-700 dark:text-slate-300;
+}
+
+.markdown-content ul ul,
+.markdown-content ol ul,
+.markdown-content ul ol,
+.markdown-content ol ol {
+  @apply mt-1 ml-6;
 }
 
 /* Links */
@@ -149,7 +156,7 @@
 }
 
 .math-display {
-  @apply block my-6 text-center overflow-x-auto bg-gradient-to-r from-slate-50 to-blue-50/30 p-4 rounded-xl border border-slate-200/50 shadow-sm;
+  @apply block my-6 text-center overflow-x-auto bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm;
 }
 
 .math-error {
@@ -167,15 +174,15 @@
 
 /* Strong and emphasis */
 .markdown-content strong {
-  @apply font-bold text-slate-900;
+  @apply font-bold text-slate-900 dark:text-slate-100;
 }
 
 .markdown-content em {
-  @apply italic;
+  @apply italic text-slate-700 dark:text-slate-300;
 }
 
 .markdown-content del {
-  @apply line-through text-slate-500;
+  @apply line-through text-slate-500 dark:text-slate-500;
 }
 
 /* Image styling */
@@ -184,13 +191,13 @@
 }
 
 .markdown-content .markdown-image {
-  @apply max-w-full h-auto rounded-xl shadow-lg border border-slate-200/50 mx-auto;
+  @apply max-w-full h-auto rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 mx-auto;
   max-height: 600px;
   object-fit: contain;
 }
 
 .markdown-content .markdown-image-wrapper + p {
-  @apply text-sm text-slate-600 italic text-center mt-2;
+  @apply text-sm text-slate-600 dark:text-slate-400 italic text-center mt-2;
 }
 
 /* Scrollbar styling */

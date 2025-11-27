@@ -120,8 +120,8 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <header className="bg-gradient-to-r from-slate-800 via-theme-primary to-theme-secondary dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 backdrop-blur-sm border-b border-white/10 shadow-2xl relative" role="banner">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <header className="bg-gradient-to-r from-slate-800 via-theme-primary to-theme-secondary dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 backdrop-blur-sm border-b border-white/10 dark:border-slate-800 shadow-2xl relative" role="banner">
         <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
         <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-4 relative z-10">
           <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm" aria-hidden="true">
@@ -139,15 +139,15 @@ function App() {
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center" role="region" aria-label="Welcome screen">
             <div className="text-center space-y-8 p-10">
-              <div className="inline-flex p-8 bg-gradient-to-br from-slate-100 via-blue-100 to-indigo-100 rounded-3xl shadow-2xl ring-1 ring-slate-200/50 relative">
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent rounded-3xl"></div>
-                <MessageSquare className="w-24 h-24 text-slate-700 relative z-10" />
+              <div className="inline-flex p-8 bg-gradient-to-br from-slate-100 via-blue-100 to-indigo-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 rounded-3xl shadow-2xl ring-1 ring-slate-200/50 dark:ring-slate-700/50 relative">
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/40 dark:from-white/5 to-transparent rounded-3xl"></div>
+                <MessageSquare className="w-24 h-24 text-slate-700 dark:text-slate-300 relative z-10" />
               </div>
               <div className="space-y-3">
-                <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+                <h2 className="text-4xl font-bold text-slate-800 dark:text-slate-100">
                   Start a conversation
                 </h2>
-                <p className="text-slate-600 max-w-md text-lg mx-auto leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-400 max-w-md text-lg mx-auto leading-relaxed">
                   Ask me anything! I'm powered by Azure OpenAI and ready to help you.
                 </p>
               </div>
@@ -159,18 +159,18 @@ function App() {
               <ChatMessage key={index} message={message} />
             ))}
             {isLoading && messages[messages.length - 1]?.content === '' && (
-              <div className="flex gap-5 p-6 bg-white/80 backdrop-blur-sm border-l-4 border-gradient-to-b from-blue-400 to-indigo-500 shadow-lg rounded-r-lg mx-2">
-                <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-slate-600 via-blue-600 to-indigo-600 flex items-center justify-center shadow-xl ring-2 ring-white/20">
+              <div className="flex gap-5 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-l-4 border-theme-primary dark:border-theme-primary/80 shadow-lg dark:shadow-slate-950/50 rounded-r-lg mx-2">
+                <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-slate-600 via-theme-primary to-theme-accent dark:from-slate-700 dark:via-theme-primary dark:to-theme-accent flex items-center justify-center shadow-xl ring-2 ring-white/20 dark:ring-slate-700/30">
                   <MessageSquare className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <div className="font-bold text-sm text-slate-800 mb-3">
+                  <div className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-3">
                     AI Assistant
                   </div>
                   <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-bounce shadow-sm" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2.5 h-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-bounce shadow-sm" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-2.5 h-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-bounce shadow-sm" style={{ animationDelay: '300ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-theme-primary rounded-full animate-bounce shadow-sm" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-theme-primary rounded-full animate-bounce shadow-sm" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-theme-primary rounded-full animate-bounce shadow-sm" style={{ animationDelay: '300ms' }}></div>
                   </div>
                 </div>
               </div>
