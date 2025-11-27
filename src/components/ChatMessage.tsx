@@ -6,14 +6,15 @@ import 'katex/dist/katex.min.css';
 
 interface ChatMessageProps {
   message: Message;
+  onRunCode?: (code: string) => void;
 }
 
-function MarkdownContent({ content }: { content: string }) {
+function MarkdownContent({ content, onRunCode }: { content: string; onRunCode?: (code: string) => void }) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (contentRef.current) {
-      // Add copy buttons to code blocks after rendering
+      // Add copy buttons and run buttons to code blocks after rendering
       const codeBlocks = contentRef.current.querySelectorAll('pre.code-block');
       
       codeBlocks.forEach((block) => {
@@ -40,15 +41,35 @@ function MarkdownContent({ content }: { content: string }) {
           }
         });
         
+        // Check if this is JavaScript/HTML code and add run button
+        const language = codeElement.className.match(/language-(\w+)/)?.[1];
+        const isRunnable = language === 'javascript' || language === 'js' || language === 'html';
+        
         // Wrap pre in relative container for absolute positioning
         const wrapper = document.createElement('div');
         wrapper.className = 'relative group';
         block.parentNode?.insertBefore(wrapper, block);
         wrapper.appendChild(block);
+        
+        if (isRunnable && onRunCode) {
+          // Add run button
+          const runButton = document.createElement('button');
+          runButton.className = 'copy-button absolute top-3 right-16 p-2.5 bg-green-700/80 hover:bg-green-600 rounded-xl transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-110 active:scale-95';
+          runButton.setAttribute('aria-label', 'Run code in sandbox');
+          runButton.innerHTML = `<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+          
+          runButton.addEventListener('click', () => {
+            const code = codeElement.textContent || '';
+            onRunCode(code);
+          });
+          
+          wrapper.appendChild(runButton);
+        }
+        
         wrapper.appendChild(copyButton);
       });
     }
-  }, [content]);
+  }, [content, onRunCode]);
 
   const html = renderMarkdownToHTML(content);
 
@@ -61,7 +82,7 @@ function MarkdownContent({ content }: { content: string }) {
   );
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
@@ -89,7 +110,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           {isUser ? 'You' : 'AI Assistant'}
         </div>
         <div className="text-slate-700 dark:text-slate-300 leading-relaxed">
-          {isUser ? (message.displayContent || message.content) : <MarkdownContent content={message.content} />}
+          {isUser ? (message.displayContent || message.content) : <MarkdownContent content={message.content} onRunCode={onRunCode} />}
         </div>
       </div>
     </div>

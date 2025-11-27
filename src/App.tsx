@@ -24,6 +24,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [isCodeSandboxOpen, setIsCodeSandboxOpen] = useState(false);
+  const [sandboxCode, setSandboxCode] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toggleTheme } = useTheme();
 
@@ -98,6 +99,11 @@ function App() {
       setCurrentConversationId(conversation.id);
       setActiveConversationId(conversation.id);
     }
+  };
+
+  const handleRunCode = (code: string) => {
+    setSandboxCode(code);
+    setIsCodeSandboxOpen(true);
   };
 
   // Keyboard shortcuts
@@ -260,7 +266,7 @@ function App() {
         ) : (
           <div className="max-w-4xl mx-auto">
             {messages.map((message, index) => (
-              <ChatMessage key={index} message={message} />
+              <ChatMessage key={index} message={message} onRunCode={handleRunCode} />
             ))}
             {isLoading && messages[messages.length - 1]?.content === '' && (
               <div className="flex gap-5 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-l-4 border-theme-primary dark:border-theme-primary/80 shadow-lg dark:shadow-slate-950/50 rounded-r-lg mx-2">
@@ -290,8 +296,11 @@ function App() {
       {/* Code Sandbox Modal */}
       {isCodeSandboxOpen && (
         <CodeSandbox
-          initialCode="// Write your JavaScript code here\nconsole.log('Hello, World!');\n\n// Try these examples:\n// console.log(2 + 2);\n// console.log(['apple', 'banana', 'cherry']);\n// console.log({ name: 'John', age: 30 });"
-          onClose={() => setIsCodeSandboxOpen(false)}
+          initialCode={sandboxCode || "// Write your JavaScript code here\nconsole.log('Hello, World!');\n\n// Try these examples:\n// console.log(2 + 2);\n// console.log(['apple', 'banana', 'cherry']);\n// console.log({ name: 'John', age: 30 });"}
+          onClose={() => {
+            setIsCodeSandboxOpen(false);
+            setSandboxCode('');
+          }}
         />
       )}
     </div>
