@@ -140,6 +140,21 @@
   @apply line-through text-slate-500;
 }
 
+/* Image styling */
+.markdown-content .markdown-image-wrapper {
+  @apply my-6 text-center;
+}
+
+.markdown-content .markdown-image {
+  @apply max-w-full h-auto rounded-xl shadow-lg border border-slate-200/50 mx-auto;
+  max-height: 600px;
+  object-fit: contain;
+}
+
+.markdown-content .markdown-image-wrapper + p {
+  @apply text-sm text-slate-600 italic text-center mt-2;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;

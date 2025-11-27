@@ -25,6 +25,13 @@ renderer.table = (token: any) => {
   return `<div class="table-wrapper"><table class="markdown-table"><thead>${header}</thead><tbody>${rows}</tbody></table></div>`;
 };
 
+// Override image rendering for better styling and security
+renderer.image = ({ href, title, text }: { href: string; title: string | null; text: string }) => {
+  const titleAttr = title ? ` title="${title}"` : '';
+  const altAttr = text ? ` alt="${text}"` : ' alt="Image"';
+  return `<div class="markdown-image-wrapper"><img src="${href}"${altAttr}${titleAttr} class="markdown-image" loading="lazy" /></div>`;
+};
+
 marked.use({ renderer });
 
 // Process math expressions in markdown
@@ -129,7 +136,7 @@ export function renderMarkdownToHTML(content: string): string {
         // KaTeX elements
         'math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'mspace', 'annotation'
       ],
-      ALLOWED_ATTR: ['class', 'style', 'href', 'src', 'alt', 'title', 'data-language', 'colspan', 'rowspan'],
+      ALLOWED_ATTR: ['class', 'style', 'href', 'src', 'alt', 'title', 'data-language', 'colspan', 'rowspan', 'loading', 'width', 'height'],
     });
     
     return clean;
