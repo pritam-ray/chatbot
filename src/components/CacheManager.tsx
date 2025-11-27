@@ -49,10 +49,10 @@ export function CacheManager() {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+            <div className="p-2 bg-gradient-to-br from-theme-primary to-theme-secondary rounded-xl">
               <Database className="w-6 h-6 text-white" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
               Response Cache
             </h2>
           </div>
@@ -73,46 +73,46 @@ export function CacheManager() {
                 <Database className="w-4 h-4" />
                 <span className="font-medium">Cached Responses</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-theme-primary dark:text-theme-primary">
                 {stats.totalEntries}
               </span>
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-700">
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                 <TrendingUp className="w-4 h-4" />
                 <span className="font-medium">Total Cache Hits</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-theme-accent dark:text-theme-accent">
                 {stats.totalHits}
               </span>
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-700">
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                 <HardDrive className="w-4 h-4" />
                 <span className="font-medium">Storage Used</span>
               </div>
-              <span className="text-lg font-bold text-slate-700">
+              <span className="text-lg font-bold text-slate-700 dark:text-slate-200">
                 {formatBytes(stats.cacheSize)}
               </span>
             </div>
           </div>
 
           <div className="space-y-3">
-            <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-4">
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Power className={`w-5 h-5 ${cacheEnabled ? 'text-green-600' : 'text-slate-400'}`} />
+                  <Power className={`w-5 h-5 ${cacheEnabled ? 'text-theme-primary' : 'text-slate-400 dark:text-slate-500'}`} />
                   <div>
-                    <div className="font-semibold text-slate-800">Cache Status</div>
-                    <div className="text-xs text-slate-500">Enable caching for faster responses</div>
+                    <div className="font-semibold text-slate-800 dark:text-slate-200">Cache Status</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Enable caching for faster responses</div>
                   </div>
                 </div>
                 <button
                   onClick={handleToggleCache}
-                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    cacheEnabled ? 'bg-green-500' : 'bg-slate-300'
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2 ${
+                    cacheEnabled ? 'bg-theme-primary' : 'bg-slate-300'
                   }`}
                   aria-label={cacheEnabled ? 'Disable cache' : 'Enable cache'}
                 >
@@ -125,9 +125,9 @@ export function CacheManager() {
               </div>
             </div>
 
-            <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-4">
-              <p className="text-sm text-slate-700 leading-relaxed">
-                <strong className="text-blue-700">💡 How it works:</strong> Repeated questions are served instantly from cache, 
+            <div className="bg-theme-primary/10 border border-theme-primary/30 rounded-xl p-4">
+              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                <strong className="text-theme-primary">💡 How it works:</strong> Repeated questions are served instantly from cache, 
                 saving API tokens and reducing response time. Cache expires after 7 days.
               </p>
             </div>
@@ -137,6 +137,7 @@ export function CacheManager() {
             <button
               onClick={handleClearCache}
               className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+              aria-label="Clear all cached responses"
             >
               <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
               Clear All Cache
@@ -157,7 +158,7 @@ export function CacheManager() {
       >
         <Database className="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
         {stats.totalEntries > 0 && (
-          <span className={`absolute -top-1 -right-1 w-4 h-4 ${cacheEnabled ? 'bg-green-500' : 'bg-slate-400'} text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg`}>
+          <span className={`absolute -top-1 -right-1 w-4 h-4 ${cacheEnabled ? 'bg-theme-primary' : 'bg-slate-400'} text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg`}>
             {stats.totalEntries > 9 ? '9+' : stats.totalEntries}
           </span>
         )}

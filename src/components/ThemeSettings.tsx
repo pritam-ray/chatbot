@@ -80,7 +80,7 @@ export function ThemeSettings() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 rounded-xl">
+            <div className="p-2 bg-gradient-to-br from-theme-primary to-theme-secondary rounded-xl">
               <Palette className="w-6 h-6 text-white" />
             </div>
             <h2
@@ -115,7 +115,7 @@ export function ThemeSettings() {
                   onClick={() => handleModeChange(themeMode)}
                   className={`p-4 rounded-xl border-2 transition-all ${
                     isActive
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      ? 'border-theme-primary bg-theme-primary/10 dark:bg-theme-primary/20'
                       : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-900'
                   }`}
                   aria-pressed={isActive ? 'true' : 'false'}
@@ -124,18 +124,18 @@ export function ThemeSettings() {
                   <div className="flex flex-col items-center gap-2">
                     <Icon
                       className={`w-6 h-6 ${
-                        isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400'
+                        isActive ? 'text-theme-primary dark:text-theme-primary' : 'text-slate-600 dark:text-slate-400'
                       }`}
                     />
                     <span
                       className={`text-sm font-medium capitalize ${
-                        isActive ? 'text-blue-700 dark:text-blue-300' : 'text-slate-700 dark:text-slate-300'
+                        isActive ? 'text-theme-primary dark:text-theme-primary' : 'text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       {themeMode}
                     </span>
                     {isActive && (
-                      <Check className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <Check className="w-4 h-4 text-theme-primary dark:text-theme-primary" />
                     )}
                   </div>
                 </button>
@@ -162,7 +162,7 @@ export function ThemeSettings() {
                   onClick={() => handlePresetChange(themePreset.id)}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${
                     isActive
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      ? 'border-theme-primary bg-theme-primary/10 dark:bg-theme-primary/20'
                       : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-900'
                   }`}
                   aria-pressed={isActive ? 'true' : 'false'}
@@ -173,13 +173,13 @@ export function ThemeSettings() {
                       <div className="flex items-center gap-2 mb-1">
                         <span
                           className={`font-semibold ${
-                            isActive ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-white'
+                            isActive ? 'text-theme-primary dark:text-theme-primary' : 'text-slate-800 dark:text-white'
                           }`}
                         >
                           {themePreset.name}
                         </span>
                         {isActive && (
-                          <Check className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          <Check className="w-4 h-4 text-theme-primary dark:text-theme-primary" />
                         )}
                       </div>
                       <p className="text-sm text-slate-600 dark:text-slate-400">

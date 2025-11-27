@@ -4,7 +4,6 @@ import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import { CacheManager } from './components/CacheManager';
 import { ThemeSettings } from './components/ThemeSettings';
-import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp';
 import { Message, streamChatCompletion } from './services/azureOpenAI';
 import { getCachedResponse, setCachedResponse, cleanExpiredCache } from './utils/cache';
 import { useTheme } from './contexts/ThemeContext';
@@ -13,9 +12,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [showShortcuts, setShowShortcuts] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const { toggleTheme } = useTheme();
 
   const scrollToBottom = () => {
@@ -59,12 +56,6 @@ function App() {
           setMessages([]);
         }
       },
-    },
-    {
-      key: '?',
-      ctrlKey: true,
-      description: 'Show keyboard shortcuts',
-      handler: () => setShowShortcuts(true),
     },
   ]);
 
@@ -130,7 +121,7 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <header className="bg-gradient-to-r from-slate-800 via-blue-900 to-indigo-900 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 backdrop-blur-sm border-b border-white/10 shadow-2xl relative" role="banner">
+      <header className="bg-gradient-to-r from-slate-800 via-theme-primary to-theme-secondary dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 backdrop-blur-sm border-b border-white/10 shadow-2xl relative" role="banner">
         <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
         <div className="max-w-4xl mx-auto px-6 py-6 flex items-center gap-4 relative z-10">
           <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm" aria-hidden="true">
@@ -138,7 +129,6 @@ function App() {
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg flex-1">AI Chatbot</h1>
           <nav className="flex items-center gap-2" aria-label="Main navigation">
-            <KeyboardShortcutsHelp />
             <ThemeSettings />
             <CacheManager />
           </nav>

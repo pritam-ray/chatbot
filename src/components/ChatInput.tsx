@@ -152,8 +152,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
               <button
                 type="button"
                 onClick={() => setShowTableEditor(true)}
-                className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                className="px-3 py-2 bg-theme-primary hover:bg-theme-primary/90 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
                 title="Edit table data"
+                aria-label="Edit table data"
               >
                 <Edit className="w-4 h-4" />
                 Edit Table
@@ -210,7 +211,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         <button
           type="submit"
           disabled={disabled || (!input.trim() && !fileContent) || isExtractingFile}
-          className="px-8 py-3.5 bg-gradient-to-r from-slate-700 via-blue-600 to-indigo-600 dark:from-slate-600 dark:via-blue-700 dark:to-indigo-700 text-white rounded-2xl hover:from-slate-800 hover:via-blue-700 hover:to-indigo-700 dark:hover:from-slate-700 dark:hover:via-blue-800 dark:hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all flex items-center gap-2.5 font-semibold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+          className="px-8 py-3.5 bg-gradient-to-r from-slate-700 via-theme-primary to-theme-secondary dark:from-slate-600 dark:via-theme-primary dark:to-theme-secondary text-white rounded-2xl hover:from-slate-800 hover:via-theme-primary/90 hover:to-theme-secondary/90 dark:hover:from-slate-700 dark:hover:via-theme-primary/80 dark:hover:to-theme-secondary/80 focus:outline-none focus:ring-2 focus:ring-theme-primary/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all flex items-center gap-2.5 font-semibold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
           aria-label="Send message"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" aria-hidden="true"></div>

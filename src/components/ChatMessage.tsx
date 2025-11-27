@@ -69,7 +69,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
       className={`flex gap-5 p-6 transition-all ${
         isUser 
           ? 'bg-slate-50/80 dark:bg-slate-800/50 border-l-4 border-slate-300/70 dark:border-slate-600/70' 
-          : 'bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border-l-4 border-blue-400 dark:border-blue-600 shadow-md hover:shadow-lg dark:shadow-slate-900/30 transition-shadow'
+          : 'bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border-l-4 border-theme-primary dark:border-theme-primary shadow-md hover:shadow-lg dark:shadow-slate-900/30 transition-shadow'
       }`}
       role="article"
       aria-label={isUser ? 'User message' : 'AI Assistant message'}
@@ -77,8 +77,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center flex-none shadow-xl ring-2 ring-white/30 dark:ring-slate-700/30 transition-transform hover:scale-105 ${
           isUser 
-            ? 'bg-gradient-to-br from-slate-500 via-blue-500 to-indigo-500 dark:from-slate-600 dark:via-blue-600 dark:to-indigo-600' 
-            : 'bg-gradient-to-br from-slate-600 via-blue-600 to-indigo-600 dark:from-slate-700 dark:via-blue-700 dark:to-indigo-700'
+            ? 'bg-gradient-to-br from-slate-500 via-theme-primary to-theme-secondary dark:from-slate-600 dark:via-theme-primary dark:to-theme-secondary' 
+            : 'bg-gradient-to-br from-slate-600 via-theme-primary to-theme-accent dark:from-slate-700 dark:via-theme-primary dark:to-theme-accent'
         }`}
         aria-hidden="true"
       >
