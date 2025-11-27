@@ -49,9 +49,9 @@ export function CacheManager() {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setIsOpen(false)}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]" onClick={() => setIsOpen(false)}>
           <div 
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6"
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 relative z-[10000]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -66,6 +66,8 @@ export function CacheManager() {
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition-colors"
+                aria-label="Close cache manager"
+                title="Close"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
