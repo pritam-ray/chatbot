@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Database, Trash2, TrendingUp, HardDrive } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Database, Trash2, TrendingUp, HardDrive, X } from 'lucide-react';
 import { getCacheStats, clearCache } from '../utils/cache';
 
 export function CacheManager() {
@@ -32,6 +33,85 @@ export function CacheManager() {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
+  const modalContent = isOpen && (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]" onClick={() => setIsOpen(false)}>
+      <div 
+        className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 relative z-[10000]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+              <Database className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              Response Cache
+            </h2>
+          </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-slate-400 hover:text-slate-600 transition-colors p-1 hover:bg-slate-100 rounded-lg"
+            aria-label="Close cache manager"
+            title="Close"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-700">
+                <Database className="w-4 h-4" />
+                <span className="font-medium">Cached Responses</span>
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                {stats.totalEntries}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-700">
+                <TrendingUp className="w-4 h-4" />
+                <span className="font-medium">Total Cache Hits</span>
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                {stats.totalHits}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-700">
+                <HardDrive className="w-4 h-4" />
+                <span className="font-medium">Storage Used</span>
+              </div>
+              <span className="text-lg font-bold text-slate-700">
+                {formatBytes(stats.cacheSize)}
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-4">
+            <p className="text-sm text-slate-700 leading-relaxed">
+              <strong className="text-blue-700">💡 How it works:</strong> Repeated questions are served instantly from cache, 
+              saving API tokens and reducing response time. Cache expires after 7 days.
+            </p>
+          </div>
+
+          {stats.totalEntries > 0 && (
+            <button
+              onClick={handleClearCache}
+              className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
+            >
+              <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              Clear All Cache
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <button
@@ -48,86 +128,7 @@ export function CacheManager() {
         )}
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]" onClick={() => setIsOpen(false)}>
-          <div 
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 relative z-[10000]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
-                  <Database className="w-6 h-6 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                  Response Cache
-                </h2>
-              </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
-                aria-label="Close cache manager"
-                title="Close"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-xl p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <Database className="w-4 h-4" />
-                    <span className="font-medium">Cached Responses</span>
-                  </div>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    {stats.totalEntries}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="font-medium">Total Cache Hits</span>
-                  </div>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                    {stats.totalHits}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <HardDrive className="w-4 h-4" />
-                    <span className="font-medium">Storage Used</span>
-                  </div>
-                  <span className="text-lg font-bold text-slate-700">
-                    {formatBytes(stats.cacheSize)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-4">
-                <p className="text-sm text-slate-700 leading-relaxed">
-                  <strong className="text-blue-700">💡 How it works:</strong> Repeated questions are served instantly from cache, 
-                  saving API tokens and reducing response time. Cache expires after 7 days.
-                </p>
-              </div>
-
-              {stats.totalEntries > 0 && (
-                <button
-                  onClick={handleClearCache}
-                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
-                >
-                  <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  Clear All Cache
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {modalContent && createPortal(modalContent, document.body)}
     </>
   );
 }
