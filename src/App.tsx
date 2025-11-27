@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
+import { CacheManager } from './components/CacheManager';
 import { Message, streamChatCompletion } from './services/azureOpenAI';
+import { getCachedResponse, setCachedResponse, cleanExpiredCache } from './utils/cache';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,6 +19,11 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  // Clean expired cache on mount
+  useEffect(() => {
+    cleanExpiredCache();
+  }, []);
+
   const handleSendMessage = async (content: string, displayContent?: string, fileName?: string) => {
     const userMessage: Message = {
       role: 'user',
@@ -28,14 +35,29 @@ function App() {
     setIsLoading(true);
 
     try {
+      const messageHistory = [...messages, userMessage];
+
+      // Check cache first
+      const cachedResponse = getCachedResponse(messageHistory);
+      
+      if (cachedResponse) {
+        // Use cached response
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content: cachedResponse,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // No cache hit, stream from API
       const assistantMessage: Message = {
         role: 'assistant',
         content: '',
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-
-      const messageHistory = [...messages, userMessage];
 
       for await (const chunk of streamChatCompletion(messageHistory)) {
         assistantMessage.content += chunk;
@@ -44,6 +66,11 @@ function App() {
           newMessages[newMessages.length - 1] = { ...assistantMessage };
           return newMessages;
         });
+      }
+
+      // Cache the complete response
+      if (assistantMessage.content) {
+        setCachedResponse(messageHistory, assistantMessage.content);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -65,7 +92,8 @@ function App() {
           <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
             <MessageSquare className="w-6 h-6 text-white drop-shadow-lg" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg">AI Chatbot</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg flex-1">AI Chatbot</h1>
+          <CacheManager />
         </div>
       </header>
 
