@@ -244,11 +244,11 @@ export function ThemeSettings() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2.5 hover:bg-white/10 rounded-xl transition-all backdrop-blur-sm group relative"
+        className="p-2.5 border border-black/10 bg-white text-[#202123] rounded-lg hover:bg-[#ececf1] transition-colors flex items-center justify-center relative"
         aria-label="Theme settings"
         title="Theme settings"
       >
-        <Palette className="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
+        <Palette className="w-5 h-5" />
         {isDark && (
           <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border border-white shadow-sm" aria-hidden="true"></span>
         )}

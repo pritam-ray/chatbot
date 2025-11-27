@@ -1,5 +1,13 @@
 import { useEffect, useRef } from 'react';
-import { User, Bot } from 'lucide-react';
+import {
+  User,
+  Bot,
+  ThumbsUp,
+  ThumbsDown,
+  Copy,
+  RefreshCw,
+  Share2,
+} from 'lucide-react';
 import { Message } from '../services/azureOpenAI';
 import { renderMarkdownToHTML } from '../utils/markdown';
 import 'katex/dist/katex.min.css';
@@ -86,33 +94,67 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
-    <div 
-      className={`flex gap-5 p-6 transition-all ${
-        isUser 
-          ? 'bg-slate-50/80 dark:bg-slate-800/40 border-l-4 border-slate-300/70 dark:border-slate-600/50' 
-          : 'bg-white/60 dark:bg-slate-800/80 backdrop-blur-sm border-l-4 border-theme-primary dark:border-theme-primary/80 shadow-md hover:shadow-lg dark:shadow-slate-950/50 transition-shadow'
-      }`}
-      role="article"
+    <article
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} w-full`}
       aria-label={isUser ? 'User message' : 'AI Assistant message'}
     >
-      <div
-        className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center flex-none shadow-xl ring-2 ring-white/30 dark:ring-slate-700/30 transition-transform hover:scale-105 ${
-          isUser 
-            ? 'bg-gradient-to-br from-slate-500 via-theme-primary to-theme-secondary dark:from-slate-600 dark:via-theme-primary dark:to-theme-secondary' 
-            : 'bg-gradient-to-br from-slate-600 via-theme-primary to-theme-accent dark:from-slate-700 dark:via-theme-primary dark:to-theme-accent'
-        }`}
-        aria-hidden="true"
-      >
-        {isUser ? <User className="w-5 h-5 text-white drop-shadow" /> : <Bot className="w-5 h-5 text-white drop-shadow" />}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-3">
-          {isUser ? 'You' : 'AI Assistant'}
+      {!isUser && (
+        <div
+          className="w-11 h-11 rounded-full bg-[#10a37f]/10 text-[#10a37f] flex items-center justify-center mr-4 shrink-0"
+          aria-hidden="true"
+        >
+          <Bot className="w-5 h-5" />
         </div>
-        <div className="text-slate-700 dark:text-slate-300 leading-relaxed">
-          {isUser ? (message.displayContent || message.content) : <MarkdownContent content={message.content} onRunCode={onRunCode} />}
+      )}
+
+      <div className={`group ${isUser ? 'max-w-[70%]' : 'flex-1'} space-y-3`}>
+        <div
+          className={`rounded-[28px] px-6 py-5 text-[15px] leading-7 shadow-sm ${
+            isUser
+              ? 'bg-[#e8edf3] text-[#202123] ml-auto'
+              : 'bg-white border border-black/5 text-[#202123]'
+          }`}
+        >
+          {!isUser && <div className="text-sm font-semibold mb-2">ChatGPT</div>}
+          {isUser ? (
+            <p className="whitespace-pre-wrap">{message.displayContent || message.content}</p>
+          ) : (
+            <MarkdownContent content={message.content} onRunCode={onRunCode} />
+          )}
         </div>
+
+        {!isUser && (
+          <div className="flex items-center justify-end gap-1 text-sm text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+            {[
+              { id: 'up', icon: ThumbsUp, label: 'Good response' },
+              { id: 'down', icon: ThumbsDown, label: 'Bad response' },
+              { id: 'copy', icon: Copy, label: 'Copy response' },
+              { id: 'refresh', icon: RefreshCw, label: 'Regenerate' },
+              { id: 'share', icon: Share2, label: 'Share response' },
+            ].map(({ id, icon: Icon, label }) => (
+              <button
+                key={id}
+                type="button"
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-500"
+                aria-label={label}
+                title={`${label} (coming soon)`}
+                disabled
+              >
+                <Icon className="w-4 h-4" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+
+      {isUser && (
+        <div
+          className="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center ml-4 shrink-0"
+          aria-hidden="true"
+        >
+          <User className="w-5 h-5" />
+        </div>
+      )}
+    </article>
   );
 }

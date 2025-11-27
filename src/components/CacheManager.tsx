@@ -152,13 +152,13 @@ export function CacheManager() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2.5 hover:bg-white/10 rounded-xl transition-all backdrop-blur-sm group relative"
+        className="p-2.5 border border-black/10 bg-white text-[#202123] rounded-lg hover:bg-[#ececf1] transition-colors relative"
         aria-label="Cache Manager"
         title={`Cache Manager (${cacheEnabled ? 'Enabled' : 'Disabled'})`}
       >
-        <Database className="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
+        <Database className="w-5 h-5" />
         {stats.totalEntries > 0 && (
-          <span className={`absolute -top-1 -right-1 w-4 h-4 ${cacheEnabled ? 'bg-theme-primary' : 'bg-slate-400'} text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg`}>
+          <span className={`absolute -top-1 -right-1 w-4 h-4 ${cacheEnabled ? 'bg-[#10a37f]' : 'bg-slate-400'} text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg`}>
             {stats.totalEntries > 9 ? '9+' : stats.totalEntries}
           </span>
         )}

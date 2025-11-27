@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Send, Paperclip, X, Edit } from 'lucide-react';
+import { Send, Paperclip, X, Edit, Mic } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { extractTextFromFile } from '../utils/pdfExtractor';
 import { parseTableFile, formatTableSummary, ParsedTable } from '../utils/tableParser';
@@ -94,8 +94,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     setInput('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const sendMessage = () => {
     if ((input.trim() || fileContent) && !disabled && !isExtractingFile) {
       const userInput = input.trim();
       let fullContent = userInput;
@@ -114,17 +113,21 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendMessage();
+  };
+
   return (
     <>
       <form 
         onSubmit={handleSubmit} 
-        className="border-t border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-6 shadow-2xl relative"
+        className="border-t border-black/5 bg-[#f7f7f8] px-6 py-4"
         aria-label="Message input form"
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-50/50 dark:from-slate-900/50 to-transparent pointer-events-none"></div>
       {attachedFile && (
         <div 
-          className="max-w-4xl mx-auto mb-4 flex items-center justify-between bg-slate-100/80 dark:bg-slate-700/80 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-600/50 shadow-lg backdrop-blur-sm relative z-10"
+          className="max-w-3xl mx-auto mb-4 flex items-center justify-between bg-white p-4 rounded-2xl border border-black/5 shadow-sm"
           role="status"
           aria-label="Attached file"
         >
@@ -173,52 +176,72 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto flex gap-3 relative z-10">
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={disabled || isExtractingFile}
-          className="p-3.5 text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/80 rounded-2xl transition-all disabled:text-gray-400 disabled:cursor-not-allowed border border-slate-200/50 dark:border-slate-600/50 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-lg backdrop-blur-sm bg-white/60 dark:bg-slate-800/60 group"
-          title="Attach file (PDF, TXT, CSV, XLSX)"
-          aria-label="Attach file"
-        >
-          <Paperclip className="w-5 h-5 transition-transform group-hover:rotate-12" />
-        </button>
+      <div className="max-w-3xl mx-auto relative">
+        <div className="bg-white border border-black/10 rounded-[32px] px-3 py-2 flex items-end gap-3 shadow-sm">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={disabled || isExtractingFile}
+            className="p-2.5 text-gray-600 hover:bg-[#f4f4f6] rounded-2xl transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
+            title="Attach file (PDF, TXT, CSV, XLSX)"
+            aria-label="Attach file"
+          >
+            <Paperclip className="w-5 h-5" />
+          </button>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          onChange={handleFileSelect}
-          accept=".pdf,.txt,.md,.doc,.docx,.csv,.xlsx,.xls"
-          className="hidden"
-          aria-label="Upload file"
-          aria-describedby="file-types-description"
-        />
-        <span id="file-types-description" className="sr-only">
-          Supported file types: PDF, TXT, MD, DOC, DOCX, CSV, XLSX, XLS
-        </span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleFileSelect}
+            accept=".pdf,.txt,.md,.doc,.docx,.csv,.xlsx,.xls"
+            className="hidden"
+            aria-label="Upload file"
+            aria-describedby="file-types-description"
+          />
+          <span id="file-types-description" className="sr-only">
+            Supported file types: PDF, TXT, MD, DOC, DOCX, CSV, XLSX, XLS
+          </span>
 
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          disabled={disabled || isExtractingFile}
-          className="flex-1 px-5 py-3.5 border border-slate-200/50 dark:border-slate-600/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition-all shadow-sm placeholder-slate-400 dark:placeholder-slate-500 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-slate-700/80 focus:bg-white dark:focus:bg-slate-700 text-slate-800 dark:text-slate-100"
-          aria-label="Message input"
-        />
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            placeholder="Message ChatGPT..."
+            disabled={disabled || isExtractingFile}
+            rows={1}
+            className="flex-1 resize-none px-1 pb-1 pt-2 border-none bg-transparent focus:outline-none focus:ring-0 disabled:text-gray-400 text-[15px] leading-6"
+            aria-label="Message input"
+          />
 
-        <button
-          type="submit"
-          disabled={disabled || (!input.trim() && !fileContent) || isExtractingFile}
-          className="px-8 py-3.5 bg-gradient-to-r from-slate-700 via-theme-primary to-theme-secondary dark:from-slate-600 dark:via-theme-primary dark:to-theme-secondary text-white rounded-2xl hover:from-slate-800 hover:via-theme-primary/90 hover:to-theme-secondary/90 dark:hover:from-slate-700 dark:hover:via-theme-primary/80 dark:hover:to-theme-secondary/80 focus:outline-none focus:ring-2 focus:ring-theme-primary/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all flex items-center gap-2.5 font-semibold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
-          aria-label="Send message"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" aria-hidden="true"></div>
-          <Send className="w-5 h-5 relative z-10" aria-hidden="true" />
-          <span className="relative z-10">Send</span>
-        </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              disabled
+              className="p-2.5 rounded-2xl text-gray-400"
+              aria-label="Voice input coming soon"
+              title="Voice input coming soon"
+            >
+              <Mic className="w-5 h-5" />
+            </button>
+            <button
+              type="submit"
+              disabled={disabled || (!input.trim() && !fileContent) || isExtractingFile}
+              className="w-11 h-11 bg-[#10a37f] text-white rounded-full flex items-center justify-center hover:bg-[#0d805f] focus:outline-none focus:ring-2 focus:ring-[#0d805f]/40 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              aria-label="Send message"
+            >
+              <Send className="w-5 h-5" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
       </div>
+      <p className="max-w-3xl mx-auto text-center text-xs text-gray-500 mt-3">
+        ChatGPT can make mistakes. Consider checking important information.
+      </p>
     </form>
 
       {showTableEditor && tableData && createPortal(
