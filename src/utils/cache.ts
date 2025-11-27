@@ -15,8 +15,67 @@ interface CacheStats {
 
 const CACHE_KEY = 'chatbot_response_cache';
 const CACHE_STATS_KEY = 'chatbot_cache_stats';
-const MAX_CACHE_ENTRIES = 100;
-const CACHE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const MAX_CACHE_ENTRIES = 1000;
+const CACHE_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const SIMILARITY_THRESHOLD = 0.85; // 85% similarity required for cache hit
+
+/**
+ * Normalize text for comparison (lowercase, trim, remove extra spaces/punctuation)
+ */
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g, '') // Remove punctuation
+    .replace(/\s+/g, ' '); // Normalize whitespace
+}
+
+/**
+ * Calculate similarity between two strings using Levenshtein distance
+ * Returns a value between 0 (completely different) and 1 (identical)
+ */
+function calculateSimilarity(str1: string, str2: string): number {
+  const s1 = normalizeText(str1);
+  const s2 = normalizeText(str2);
+  
+  // Quick check for exact match after normalization
+  if (s1 === s2) return 1.0;
+  
+  const len1 = s1.length;
+  const len2 = s2.length;
+  
+  // If strings are very different in length, they're likely different
+  const lengthRatio = Math.min(len1, len2) / Math.max(len1, len2);
+  if (lengthRatio < 0.5) return lengthRatio * 0.5; // Penalize large length differences
+  
+  // Levenshtein distance calculation
+  const matrix: number[][] = [];
+  
+  for (let i = 0; i <= len1; i++) {
+    matrix[i] = [i];
+  }
+  
+  for (let j = 0; j <= len2; j++) {
+    matrix[0][j] = j;
+  }
+  
+  for (let i = 1; i <= len1; i++) {
+    for (let j = 1; j <= len2; j++) {
+      const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,      // deletion
+        matrix[i][j - 1] + 1,      // insertion
+        matrix[i - 1][j - 1] + cost // substitution
+      );
+    }
+  }
+  
+  const distance = matrix[len1][len2];
+  const maxLength = Math.max(len1, len2);
+  
+  // Convert distance to similarity (0 to 1)
+  return maxLength === 0 ? 1.0 : 1 - (distance / maxLength);
+}
 
 /**
  * Generate a cache key from conversation context
@@ -35,21 +94,68 @@ function generateCacheKey(messages: Message[]): string {
 }
 
 /**
+ * Find similar cached entry using fuzzy matching
+ */
+function findSimilarCacheEntry(messages: Message[], cache: Record<string, CacheEntry>): { key: string; entry: CacheEntry; similarity: number } | null {
+  const contextMessages = messages.slice(-4, -1);
+  const currentMessage = messages[messages.length - 1];
+  const currentPrompt = currentMessage.content;
+  
+  const contextString = contextMessages
+    .map(m => `${m.role}:${m.content.substring(0, 100)}`)
+    .join('|');
+  
+  let bestMatch: { key: string; entry: CacheEntry; similarity: number } | null = null;
+  
+  for (const [key, entry] of Object.entries(cache)) {
+    // Check if context matches (must be same conversation context)
+    const keyContext = key.substring(0, key.lastIndexOf('|'));
+    if (keyContext !== contextString) continue;
+    
+    // Calculate similarity between current prompt and cached prompt
+    const similarity = calculateSimilarity(currentPrompt, entry.prompt);
+    
+    if (similarity >= SIMILARITY_THRESHOLD) {
+      if (!bestMatch || similarity > bestMatch.similarity) {
+        bestMatch = { key, entry, similarity };
+      }
+    }
+  }
+  
+  return bestMatch;
+}
+
+/**
  * Get cached response for given conversation context
+ * Uses fuzzy matching to find similar questions
  */
 export function getCachedResponse(messages: Message[]): string | null {
   try {
     const cacheKey = generateCacheKey(messages);
     const cache = getCache();
+    const now = Date.now();
     
-    const entry = cache[cacheKey];
+    // First try exact match
+    let entry = cache[cacheKey];
+    let matchType: 'exact' | 'fuzzy' = 'exact';
+    let similarity = 1.0;
+    
+    // If no exact match, try fuzzy matching
+    if (!entry) {
+      const similarMatch = findSimilarCacheEntry(messages, cache);
+      if (similarMatch) {
+        entry = similarMatch.entry;
+        matchType = 'fuzzy';
+        similarity = similarMatch.similarity;
+        console.log(`🔍 Fuzzy match found: ${(similarity * 100).toFixed(1)}% similar`);
+      }
+    }
     
     if (!entry) {
       return null;
     }
     
     // Check if cache entry is expired
-    const now = Date.now();
     if (now - entry.timestamp > CACHE_EXPIRY_MS) {
       delete cache[cacheKey];
       saveCache(cache);
@@ -64,7 +170,12 @@ export function getCachedResponse(messages: Message[]): string | null {
     // Update stats
     updateStats({ hit: true });
     
-    console.log(`🎯 Cache HIT for prompt (hits: ${entry.hitCount})`);
+    if (matchType === 'exact') {
+      console.log(`🎯 Cache HIT (exact) - hits: ${entry.hitCount}`);
+    } else {
+      console.log(`🎯 Cache HIT (fuzzy ${(similarity * 100).toFixed(1)}%) - hits: ${entry.hitCount}`);
+    }
+    
     return entry.response;
   } catch (error) {
     console.error('Error reading from cache:', error);
