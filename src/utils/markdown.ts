@@ -30,7 +30,7 @@ marked.use({ renderer });
 // Process math expressions in markdown
 function processMathExpressions(text: string): string {
   const mathExpressions: Array<{ type: 'inline' | 'display'; expr: string }> = [];
-  const mathPlaceholder = '___MATH_EXPR___';
+  const mathPlaceholder = 'MATHEXPRESSIONPLACEHOLDER';
   
   let processed = text;
   
@@ -79,7 +79,7 @@ function processMathExpressions(text: string): string {
 }
 
 function restoreMathExpressions(html: string, mathExpressions: Array<{ type: 'inline' | 'display'; expr: string }>): string {
-  const mathPlaceholder = '___MATH_EXPR___';
+  const mathPlaceholder = 'MATHEXPRESSIONPLACEHOLDER';
   
   return html.replace(new RegExp(`${mathPlaceholder}(\\d+)${mathPlaceholder}`, 'g'), (_match, index) => {
     const { type, expr } = mathExpressions[parseInt(index)];
