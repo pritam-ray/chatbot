@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Send, Paperclip, X } from 'lucide-react';
 import { extractTextFromFile } from '../utils/pdfExtractor';
+import { parseTableFile, formatTableSummary } from '../utils/tableParser';
 
 interface ChatInputProps {
   onSend: (message: string, displayMessage?: string, fileName?: string) => void;
@@ -12,6 +13,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
   const [isExtractingFile, setIsExtractingFile] = useState(false);
+  const [isTableFile, setIsTableFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,22 +31,41 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     setAttachedFile(file);
     setIsExtractingFile(true);
 
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const isTable = extension === 'csv' || extension === 'xlsx' || extension === 'xls';
+    setIsTableFile(isTable);
+
     try {
-      console.log('Starting to extract text from:', file.name, 'Type:', file.type);
-      const content = await extractTextFromFile(file);
-      console.log('Extracted content length:', content.length);
+      console.log('Starting to process file:', file.name, 'Type:', file.type);
+      
+      let content: string;
+      
+      if (isTable) {
+        // Parse CSV/Excel files as tables
+        const tableData = await parseTableFile(file);
+        content = formatTableSummary(tableData);
+        console.log('Parsed table:', tableData.rowCount, 'rows ×', tableData.columnCount, 'columns');
+      } else {
+        // Extract text from documents
+        content = await extractTextFromFile(file);
+        console.log('Extracted content length:', content.length);
+      }
+      
       setFileContent(content);
+      
       if (!content || content.trim().length === 0) {
-        alert('Could not extract text from the file. The file might be empty or in an unsupported format.');
+        alert('Could not extract data from the file. The file might be empty or in an unsupported format.');
         setAttachedFile(null);
         setFileContent('');
+        setIsTableFile(false);
       }
     } catch (error) {
-      console.error('Error extracting file content:', error);
+      console.error('Error processing file:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       alert(`Error reading file: ${errorMessage}\nPlease try another file.`);
       setAttachedFile(null);
       setFileContent('');
+      setIsTableFile(false);
     } finally {
       setIsExtractingFile(false);
       if (fileInputRef.current) {
@@ -56,6 +77,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const handleRemoveFile = () => {
     setAttachedFile(null);
     setFileContent('');
+    setIsTableFile(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -84,17 +106,30 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       {attachedFile && (
         <div className="max-w-4xl mx-auto mb-4 flex items-center justify-between bg-gradient-to-r from-slate-100/80 via-blue-50/50 to-indigo-50/30 p-4 rounded-2xl border border-slate-200/50 shadow-lg backdrop-blur-sm relative z-10">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/60 rounded-lg">
-              <Paperclip className="w-4 h-4 text-slate-600" />
+            <div className={`p-2 rounded-lg ${isTableFile ? 'bg-green-100' : 'bg-white/60'}`}>
+              {isTableFile ? (
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              ) : (
+                <Paperclip className="w-4 h-4 text-slate-600" />
+              )}
             </div>
-            <span className="text-sm font-semibold text-slate-700">
-              {isExtractingFile ? 'Processing...' : attachedFile.name}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-slate-700">
+                {isExtractingFile ? 'Processing...' : attachedFile.name}
+              </span>
+              {isTableFile && !isExtractingFile && (
+                <span className="text-xs text-green-600">📊 Table data will be formatted</span>
+              )}
+            </div>
           </div>
           <button
             type="button"
             onClick={handleRemoveFile}
             className="p-2 hover:bg-white/80 rounded-xl transition-all hover:shadow-md"
+            aria-label="Remove file"
+            title="Remove file"
           >
             <X className="w-4 h-4 text-slate-600" />
           </button>
@@ -116,8 +151,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           ref={fileInputRef}
           type="file"
           onChange={handleFileSelect}
-          accept=".pdf,.txt,.md,.doc,.docx"
+          accept=".pdf,.txt,.md,.doc,.docx,.csv,.xlsx,.xls"
           className="hidden"
+          aria-label="Upload file"
         />
 
         <input

@@ -17,7 +17,7 @@ const CACHE_KEY = 'chatbot_response_cache';
 const CACHE_STATS_KEY = 'chatbot_cache_stats';
 const MAX_CACHE_ENTRIES = 1000;
 const CACHE_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-const SIMILARITY_THRESHOLD = 0.85; // 85% similarity required for cache hit
+const SIMILARITY_THRESHOLD = 0.90; // 90% similarity required for cache hit
 
 /**
  * Normalize text for comparison (lowercase, trim, remove extra spaces/punctuation)
