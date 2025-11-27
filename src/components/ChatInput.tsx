@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react';
-import { Send, Paperclip, X } from 'lucide-react';
+import { Send, Paperclip, X, Edit } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { extractTextFromFile } from '../utils/pdfExtractor';
-import { parseTableFile, formatTableSummary } from '../utils/tableParser';
+import { parseTableFile, formatTableSummary, ParsedTable } from '../utils/tableParser';
+import { TableEditor } from './TableEditor';
 
 interface ChatInputProps {
   onSend: (message: string, displayMessage?: string, fileName?: string) => void;
@@ -14,6 +16,8 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [fileContent, setFileContent] = useState<string>('');
   const [isExtractingFile, setIsExtractingFile] = useState(false);
   const [isTableFile, setIsTableFile] = useState(false);
+  const [tableData, setTableData] = useState<ParsedTable | null>(null);
+  const [showTableEditor, setShowTableEditor] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,9 +46,10 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       
       if (isTable) {
         // Parse CSV/Excel files as tables
-        const tableData = await parseTableFile(file);
-        content = formatTableSummary(tableData);
-        console.log('Parsed table:', tableData.rowCount, 'rows ×', tableData.columnCount, 'columns');
+        const parsedTable = await parseTableFile(file);
+        setTableData(parsedTable);
+        content = formatTableSummary(parsedTable);
+        console.log('Parsed table:', parsedTable.rowCount, 'rows ×', parsedTable.columnCount, 'columns');
       } else {
         // Extract text from documents
         content = await extractTextFromFile(file);
@@ -78,6 +83,15 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     setAttachedFile(null);
     setFileContent('');
     setIsTableFile(false);
+    setTableData(null);
+    setShowTableEditor(false);
+  };
+
+  const handleSendEditedTable = (markdown: string) => {
+    onSend(markdown, `📊 Edited table data`, 'edited_table.csv');
+    setShowTableEditor(false);
+    handleRemoveFile();
+    setInput('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -101,8 +115,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-slate-200/50 bg-white/80 backdrop-blur-xl p-6 shadow-2xl relative">
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-50/50 to-transparent pointer-events-none"></div>
+    <>
+      <form onSubmit={handleSubmit} className="border-t border-slate-200/50 bg-white/80 backdrop-blur-xl p-6 shadow-2xl relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-50/50 to-transparent pointer-events-none"></div>
       {attachedFile && (
         <div className="max-w-4xl mx-auto mb-4 flex items-center justify-between bg-gradient-to-r from-slate-100/80 via-blue-50/50 to-indigo-50/30 p-4 rounded-2xl border border-slate-200/50 shadow-lg backdrop-blur-sm relative z-10">
           <div className="flex items-center gap-3">
@@ -124,15 +139,28 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
               )}
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleRemoveFile}
-            className="p-2 hover:bg-white/80 rounded-xl transition-all hover:shadow-md"
-            aria-label="Remove file"
-            title="Remove file"
-          >
-            <X className="w-4 h-4 text-slate-600" />
-          </button>
+          <div className="flex items-center gap-2">
+            {isTableFile && !isExtractingFile && tableData && (
+              <button
+                type="button"
+                onClick={() => setShowTableEditor(true)}
+                className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                title="Edit table data"
+              >
+                <Edit className="w-4 h-4" />
+                Edit Table
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleRemoveFile}
+              className="p-2 hover:bg-white/80 rounded-xl transition-all hover:shadow-md"
+              aria-label="Remove file"
+              title="Remove file"
+            >
+              <X className="w-4 h-4 text-slate-600" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -176,5 +204,16 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         </button>
       </div>
     </form>
+
+      {showTableEditor && tableData && createPortal(
+        <TableEditor
+          initialHeaders={tableData.headers}
+          initialRows={tableData.rows}
+          onSendToAI={handleSendEditedTable}
+          onClose={() => setShowTableEditor(false)}
+        />,
+        document.body
+      )}
+    </>
   );
 }

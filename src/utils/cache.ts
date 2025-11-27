@@ -15,6 +15,7 @@ interface CacheStats {
 
 const CACHE_KEY = 'chatbot_response_cache';
 const CACHE_STATS_KEY = 'chatbot_cache_stats';
+const CACHE_ENABLED_KEY = 'chatbot_cache_enabled';
 const MAX_CACHE_ENTRIES = 1000;
 const CACHE_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const SIMILARITY_THRESHOLD = 0.90; // 90% similarity required for cache hit
@@ -130,6 +131,12 @@ function findSimilarCacheEntry(messages: Message[], cache: Record<string, CacheE
  * Uses fuzzy matching to find similar questions
  */
 export function getCachedResponse(messages: Message[]): string | null {
+  // Check if cache is enabled
+  if (!isCacheEnabled()) {
+    console.log('🚫 Cache is disabled - fetching fresh response');
+    return null;
+  }
+  
   try {
     const cacheKey = generateCacheKey(messages);
     const cache = getCache();
@@ -187,6 +194,12 @@ export function getCachedResponse(messages: Message[]): string | null {
  * Save response to cache
  */
 export function setCachedResponse(messages: Message[], response: string): void {
+  // Don't cache if disabled
+  if (!isCacheEnabled()) {
+    console.log('🚫 Cache is disabled - not saving response');
+    return;
+  }
+  
   try {
     const cacheKey = generateCacheKey(messages);
     const cache = getCache();
@@ -337,5 +350,31 @@ function updateStats(options: { hit: boolean }): void {
     localStorage.setItem(CACHE_STATS_KEY, JSON.stringify(stats));
   } catch (error) {
     console.error('Error updating cache stats:', error);
+  }
+}
+
+/**
+ * Check if cache is enabled
+ */
+export function isCacheEnabled(): boolean {
+  try {
+    const enabled = localStorage.getItem(CACHE_ENABLED_KEY);
+    // Default to enabled if not set
+    return enabled === null ? true : enabled === 'true';
+  } catch (error) {
+    console.error('Error checking cache enabled state:', error);
+    return true; // Default to enabled on error
+  }
+}
+
+/**
+ * Set cache enabled state
+ */
+export function setCacheEnabled(enabled: boolean): void {
+  try {
+    localStorage.setItem(CACHE_ENABLED_KEY, enabled.toString());
+    console.log(`🎛️ Cache ${enabled ? 'enabled' : 'disabled'}`);
+  } catch (error) {
+    console.error('Error setting cache enabled state:', error);
   }
 }

@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Database, Trash2, TrendingUp, HardDrive, X } from 'lucide-react';
-import { getCacheStats, clearCache } from '../utils/cache';
+import { Database, Trash2, TrendingUp, HardDrive, X, Power } from 'lucide-react';
+import { getCacheStats, clearCache, isCacheEnabled, setCacheEnabled } from '../utils/cache';
 
 export function CacheManager() {
   const [isOpen, setIsOpen] = useState(false);
   const [stats, setStats] = useState({ totalEntries: 0, totalHits: 0, cacheSize: 0 });
+  const [cacheEnabled, setCacheEnabledState] = useState(isCacheEnabled());
 
   const updateStats = () => {
     const currentStats = getCacheStats();
     setStats(currentStats);
+    setCacheEnabledState(isCacheEnabled());
   };
 
   useEffect(() => {
@@ -23,6 +25,12 @@ export function CacheManager() {
       clearCache();
       updateStats();
     }
+  };
+
+  const handleToggleCache = () => {
+    const newState = !cacheEnabled;
+    setCacheEnabled(newState);
+    setCacheEnabledState(newState);
   };
 
   const formatBytes = (bytes: number): string => {
@@ -91,11 +99,38 @@ export function CacheManager() {
             </div>
           </div>
 
-          <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-4">
-            <p className="text-sm text-slate-700 leading-relaxed">
-              <strong className="text-blue-700">💡 How it works:</strong> Repeated questions are served instantly from cache, 
-              saving API tokens and reducing response time. Cache expires after 7 days.
-            </p>
+          <div className="space-y-3">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Power className={`w-5 h-5 ${cacheEnabled ? 'text-green-600' : 'text-slate-400'}`} />
+                  <div>
+                    <div className="font-semibold text-slate-800">Cache Status</div>
+                    <div className="text-xs text-slate-500">Enable caching for faster responses</div>
+                  </div>
+                </div>
+                <button
+                  onClick={handleToggleCache}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    cacheEnabled ? 'bg-green-500' : 'bg-slate-300'
+                  }`}
+                  aria-label={cacheEnabled ? 'Disable cache' : 'Enable cache'}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform ${
+                      cacheEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-4">
+              <p className="text-sm text-slate-700 leading-relaxed">
+                <strong className="text-blue-700">💡 How it works:</strong> Repeated questions are served instantly from cache, 
+                saving API tokens and reducing response time. Cache expires after 7 days.
+              </p>
+            </div>
           </div>
 
           {stats.totalEntries > 0 && (
@@ -118,13 +153,16 @@ export function CacheManager() {
         onClick={() => setIsOpen(!isOpen)}
         className="p-2.5 hover:bg-white/10 rounded-xl transition-all backdrop-blur-sm group relative"
         aria-label="Cache Manager"
-        title="Cache Manager"
+        title={`Cache Manager (${cacheEnabled ? 'Enabled' : 'Disabled'})`}
       >
         <Database className="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
         {stats.totalEntries > 0 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg">
+          <span className={`absolute -top-1 -right-1 w-4 h-4 ${cacheEnabled ? 'bg-green-500' : 'bg-slate-400'} text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg`}>
             {stats.totalEntries > 9 ? '9+' : stats.totalEntries}
           </span>
+        )}
+        {!cacheEnabled && (
+          <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white shadow-sm"></span>
         )}
       </button>
 
