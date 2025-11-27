@@ -12,6 +12,7 @@ A modern, feature-rich AI chatbot application built with React, TypeScript, and 
 ### 🤖 AI Capabilities
 - **Streaming Responses**: Real-time streaming chat completions from Azure OpenAI
 - **Context-Aware Conversations**: Maintains conversation history for contextual responses
+- **Smart Response Caching**: Client-side caching for instant replay of repeated queries (reduces API costs)
 - **Advanced Markdown Rendering**: Full support for GitHub Flavored Markdown (GFM)
 - **Mathematical Equations**: Render inline and display math equations using KaTeX
 - **Table Support**: Beautiful, responsive tables with custom styling
@@ -30,6 +31,7 @@ A modern, feature-rich AI chatbot application built with React, TypeScript, and 
 - **Smooth Animations**: Polished transitions and hover effects
 - **Copy Code Buttons**: One-click code copying with visual feedback
 - **Custom Scrollbars**: Styled scrollbars matching the theme
+- **Cache Manager**: Visual interface to monitor and manage cached responses
 
 ## 🚀 Getting Started
 
@@ -152,6 +154,17 @@ All code blocks feature:
 - Visual feedback (checkmark animation)
 - Language detection and display
 
+### Response Caching
+Intelligent client-side caching system:
+- **Instant Replies**: Cached responses appear instantly (zero API calls)
+- **Context-Aware**: Same question in different contexts = different cache entries
+- **Cost Savings**: Reduces token usage for repeated queries
+- **Auto-Expiry**: Cache entries expire after 7 days
+- **Storage Management**: Auto-cleanup when reaching capacity (max 100 entries)
+- **Visual Dashboard**: Monitor cache hits, entries, and storage usage
+
+📘 **[Full Cache Documentation](CACHE_FEATURE.md)**
+
 ## 🔧 Configuration
 
 ### Azure OpenAI Setup
@@ -181,6 +194,14 @@ Modify `src/index.css` to customize markdown rendering styles.
 
 ### Basic Chat
 Simply type your message and press Enter or click Send to interact with the AI.
+
+### Using Cache Manager
+1. Click the **Database icon** in the header
+2. View cache statistics (entries, hits, storage)
+3. Clear cache if needed
+4. Watch console logs for cache activity:
+   - `🎯 Cache HIT` - Response served from cache
+   - `💾 Cached response` - New response saved
 
 ### Sending Files
 1. Click the attachment icon
