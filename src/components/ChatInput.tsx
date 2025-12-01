@@ -95,9 +95,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <>
-      <form 
-        onSubmit={handleSubmit} 
-        className="border-t border-black/5 bg-[#f7f7f8] px-6 py-4"
+      <form
+        onSubmit={handleSubmit}
+        className="border-t border-black/5 dark:border-white/10 bg-[#f7f7f8] dark:bg-[#212121] px-6 py-4"
         aria-label="Message input form"
       >
       {imageAttachments.length > 0 && (
