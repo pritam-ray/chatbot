@@ -244,7 +244,7 @@ export function ThemeSettings() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2.5 border border-black/10 bg-white text-[#202123] rounded-lg hover:bg-[#ececf1] transition-colors flex items-center justify-center relative"
+        className="p-2.5 border border-black/10 dark:border-white/10 bg-white dark:bg-[#2f2f2f] text-[#202123] dark:text-[#ececf1] rounded-lg hover:bg-[#ececf1] dark:hover:bg-[#3a3a3a] transition-colors flex items-center justify-center relative"
         aria-label="Theme settings"
         title="Theme settings"
       >

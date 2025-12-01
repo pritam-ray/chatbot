@@ -68,24 +68,24 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-[#2f2f2f] rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-white dark:bg-[#2f2f2f] border-b border-gray-200 dark:border-white/10 px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-purple-600" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">Generate Images</h2>
-              <p className="text-sm text-gray-500">Create images with DALL-E 3</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Create images with DALL-E 3</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-[#3a3a3a] rounded-xl transition-colors"
             aria-label="Close"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
@@ -93,8 +93,8 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
         <div className="p-6 space-y-6">
           {/* Prompt Input */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Describe what you want to create
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+              Describe the image you want to create
             </label>
             <div className="relative">
               <textarea
@@ -109,15 +109,15 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
                 placeholder="A serene landscape with mountains at sunset, painted in watercolor style..."
                 rows={4}
                 disabled={isGenerating}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-white/20 rounded-xl resize-none bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 dark:disabled:bg-[#1a1a1a] disabled:text-gray-500"
               />
               <button
                 onClick={handleCopyPrompt}
                 disabled={!prompt.trim()}
-                className="absolute top-3 right-3 p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                className="absolute top-3 right-3 p-2 hover:bg-gray-100 dark:hover:bg-[#3a3a3a] rounded-lg transition-colors disabled:opacity-50"
                 title="Copy prompt"
               >
-                <Copy className="w-4 h-4 text-gray-500" />
+                <Copy className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-2">
@@ -129,14 +129,14 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
           <div className="grid grid-cols-3 gap-4">
             {/* Size */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Size
               </label>
               <select
                 value={size}
                 onChange={(e) => setSize(e.target.value as typeof size)}
                 disabled={isGenerating}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-white/20 rounded-lg bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 dark:disabled:bg-[#1a1a1a]"
               >
                 <option value="1024x1024">Square (1024×1024)</option>
                 <option value="1792x1024">Landscape (1792×1024)</option>
@@ -146,14 +146,14 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
 
             {/* Quality */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Quality
               </label>
               <select
                 value={quality}
                 onChange={(e) => setQuality(e.target.value as typeof quality)}
                 disabled={isGenerating}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-white/20 rounded-lg bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 dark:disabled:bg-[#1a1a1a]"
               >
                 <option value="standard">Standard</option>
                 <option value="hd">HD (Higher Cost)</option>
@@ -162,14 +162,14 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
 
             {/* Style */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Style
               </label>
               <select
                 value={style}
                 onChange={(e) => setStyle(e.target.value as typeof style)}
                 disabled={isGenerating}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-white/20 rounded-lg bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 dark:disabled:bg-[#1a1a1a]"
               >
                 <option value="vivid">Vivid (More artistic)</option>
                 <option value="natural">Natural (Photorealistic)</option>
@@ -218,10 +218,10 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                       <button
                         onClick={() => handleDownload(imageUrl, index)}
-                        className="p-3 bg-white/90 hover:bg-white rounded-xl transition-colors"
+                        className="p-3 bg-white/90 dark:bg-[#2f2f2f]/90 hover:bg-white dark:hover:bg-[#3a3a3a] rounded-xl transition-colors"
                         title="Download image"
                       >
-                        <Download className="w-5 h-5 text-gray-700" />
+                        <Download className="w-5 h-5 text-gray-700 dark:text-gray-200" />
                       </button>
                     </div>
                   </div>

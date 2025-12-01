@@ -125,7 +125,7 @@ export function AudioRecorder({ onRecordingComplete, onCancel }: AudioRecorderPr
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-lg">
+    <div className="bg-white dark:bg-[#2f2f2f] border border-gray-200 dark:border-white/10 rounded-2xl p-4 shadow-lg">
       {error && (
         <div className="mb-3 p-3 bg-red-50 text-red-600 text-sm rounded-lg">
           {error}
@@ -150,11 +150,11 @@ export function AudioRecorder({ onRecordingComplete, onCancel }: AudioRecorderPr
                   {!isPaused && (
                     <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
                   )}
-                  <span className="text-lg font-mono font-semibold text-gray-700">
+                  <span className="text-lg font-mono font-semibold text-gray-700 dark:text-gray-200">
                     {formatTime(recordingTime)}
                   </span>
                 </div>
-                <div className="flex-1 h-8 bg-gray-100 rounded-lg flex items-center px-2">
+                <div className="flex-1 h-8 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center px-2">
                   <div className="flex gap-0.5 items-center h-full">
                     {Array.from({ length: 20 }).map((_, i) => (
                       <div
@@ -171,14 +171,14 @@ export function AudioRecorder({ onRecordingComplete, onCancel }: AudioRecorderPr
               </div>
               <button
                 onClick={pauseRecording}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl transition-colors"
+                className="px-4 py-2 bg-gray-200 dark:bg-[#3f3f3f] hover:bg-gray-300 dark:hover:bg-[#4a4a4a] text-gray-900 dark:text-gray-100 rounded-xl transition-colors"
                 title={isPaused ? 'Resume' : 'Pause'}
               >
                 {isPaused ? '▶' : '⏸'}
               </button>
               <button
                 onClick={stopRecording}
-                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl transition-colors"
+                className="flex items-center gap-2 bg-gray-700 dark:bg-[#4a4a4a] hover:bg-gray-800 dark:hover:bg-[#5a5a5a] text-white px-4 py-2 rounded-xl transition-colors"
               >
                 <Square className="w-4 h-4" />
                 Stop
@@ -193,14 +193,14 @@ export function AudioRecorder({ onRecordingComplete, onCancel }: AudioRecorderPr
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <audio src={audioUrl} controls className="flex-1" />
-            <span className="text-sm text-gray-600 font-mono">
+            <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
               {formatTime(recordingTime)}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={discardRecording}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-[#3f3f3f] hover:bg-gray-300 dark:hover:bg-[#4a4a4a] text-gray-700 dark:text-gray-200 rounded-xl transition-colors"
             >
               <Trash2 className="w-4 h-4" />
               Discard

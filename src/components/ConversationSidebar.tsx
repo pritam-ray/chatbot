@@ -305,8 +305,8 @@ export function ConversationSidebar({
         <button className="w-full bg-[#10a37f] text-white rounded-2xl py-2.5 text-sm font-semibold hover:bg-[#0d8a69] transition-all">
           Upgrade plan
         </button>
-        <div className="flex items-center gap-3 p-2 rounded-2xl bg-gray-100">
-          <div className="w-9 h-9 rounded-full bg-white border border-black/5 flex items-center justify-center font-semibold">PR</div>
+        <div className="flex items-center gap-3 p-2 rounded-2xl bg-gray-100 dark:bg-[#2f2f2f]">
+          <div className="w-9 h-9 rounded-full bg-white dark:bg-[#3f3f3f] border border-black/5 dark:border-white/10 flex items-center justify-center font-semibold">PR</div>
           <div className="text-sm">
             <p className="font-medium text-[#202123]">Pritam Ray</p>
             <p className="text-gray-500 text-xs">pritam@example.com</p>

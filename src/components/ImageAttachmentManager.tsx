@@ -167,18 +167,18 @@ export function ImageAttachmentManager({
         {documentAttachments.length > 0 && (
           <div className="space-y-2">
             {documentAttachments.map((attachment) => (
-              <div key={attachment.id} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-black/10 group">
+              <div key={attachment.id} className="flex items-center gap-3 bg-white dark:bg-[#2f2f2f] p-3 rounded-xl border border-black/10 dark:border-white/10 group">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <FileText className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{attachment.name}</p>
-                  <p className="text-xs text-gray-500">{(attachment.size / 1024).toFixed(1)} KB</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{attachment.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{(attachment.size / 1024).toFixed(1)} KB</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveAttachment(attachment.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                   aria-label={`Remove ${attachment.name}`}
                 >
                   <X className="w-4 h-4" />
@@ -188,8 +188,8 @@ export function ImageAttachmentManager({
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
-          <p className="text-xs text-gray-500">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             {attachments.length} file{attachments.length !== 1 ? 's' : ''} attached
             {imageAttachments.length > 0 && documentAttachments.length > 0 && 
               ` (${imageAttachments.length} image${imageAttachments.length !== 1 ? 's' : ''}, ${documentAttachments.length} document${documentAttachments.length !== 1 ? 's' : ''})`

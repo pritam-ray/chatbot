@@ -44,7 +44,7 @@ export function CacheManager() {
   const modalContent = isOpen && (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]" onClick={() => setIsOpen(false)}>
       <div 
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 relative z-[10000]"
+        className="bg-white dark:bg-[#2f2f2f] rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 relative z-[10000]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -58,7 +58,7 @@ export function CacheManager() {
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-slate-400 hover:text-slate-600 transition-colors p-1 hover:bg-slate-100 rounded-lg"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-1 hover:bg-slate-100 dark:hover:bg-[#3a3a3a] rounded-lg"
             aria-label="Close cache manager"
             title="Close"
           >
@@ -69,7 +69,7 @@ export function CacheManager() {
         <div className="space-y-4">
           <div className="bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-700">
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                 <Database className="w-4 h-4" />
                 <span className="font-medium">Cached Responses</span>
               </div>
@@ -152,7 +152,7 @@ export function CacheManager() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2.5 border border-black/10 bg-white text-[#202123] rounded-lg hover:bg-[#ececf1] transition-colors relative"
+        className="p-2.5 border border-black/10 dark:border-white/10 bg-white dark:bg-[#2f2f2f] text-[#202123] dark:text-[#ececf1] rounded-lg hover:bg-[#ececf1] dark:hover:bg-[#3a3a3a] transition-colors relative"
         aria-label="Cache Manager"
         title={`Cache Manager (${cacheEnabled ? 'Enabled' : 'Disabled'})`}
       >
