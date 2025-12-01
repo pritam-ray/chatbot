@@ -130,8 +130,8 @@ export function ImageAttachmentManager({
       <div
         className={`relative border-2 border-dashed rounded-2xl p-4 transition-colors ${
           dragActive
-            ? 'border-[#10a37f] bg-[#10a37f]/5'
-            : 'border-gray-200 bg-gray-50'
+            ? 'border-[#10a37f] bg-[#10a37f]/5 dark:bg-[#10a37f]/15'
+            : 'border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-[#151515]'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -145,7 +145,7 @@ export function ImageAttachmentManager({
                 <img
                   src={attachment.previewUrl}
                   alt={attachment.name}
-                  className="w-full h-24 object-cover rounded-xl border border-black/10"
+                  className="w-full h-24 object-cover rounded-xl border border-black/10 dark:border-white/15"
                 />
                 <button
                   type="button"
@@ -168,7 +168,7 @@ export function ImageAttachmentManager({
           <div className="space-y-2">
             {documentAttachments.map((attachment) => (
               <div key={attachment.id} className="flex items-center gap-3 bg-white dark:bg-[#2f2f2f] p-3 rounded-xl border border-black/10 dark:border-white/10 group">
-                <div className="p-2 bg-blue-100 rounded-lg">
+                <div className="p-2 rounded-lg bg-blue-100 dark:bg-[#1f2a44]">
                   <FileText className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -188,7 +188,7 @@ export function ImageAttachmentManager({
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-white/15">
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {attachments.length} file{attachments.length !== 1 ? 's' : ''} attached
             {imageAttachments.length > 0 && documentAttachments.length > 0 && 

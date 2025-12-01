@@ -32,21 +32,26 @@ import {
   Conversation,
 } from './utils/storage';
 
-const FOLLOW_UP_PROMPTS = [
+const HERO_ACTIONS = [
   {
-    id: 'poem',
-    label: 'Write me a poem in the style of Edgar Allan Poe.',
-    prompt: 'Write me a poem in the style of Edgar Allan Poe.',
+    id: 'news-recaps',
+    label: 'Catch me up on AI news',
+    prompt: 'Give me three concise bullet points that summarize the most important AI news stories from this week.',
   },
   {
-    id: 'ai-fun',
-    label: "What's something fun I can make with AI today?",
-    prompt: "What's something fun I can make with AI today?",
+    id: 'code-review',
+    label: 'Explain the code I paste',
+    prompt: 'Review the code I provide and explain what it does, calling out potential issues or optimizations.',
   },
   {
-    id: 'space-fact',
-    label: 'Tell me an interesting fact about space.',
-    prompt: 'Tell me an interesting fact about space.',
+    id: 'summarize-notes',
+    label: 'Summarize this meeting for me',
+    prompt: 'Summarize this meeting transcript into 3 takeaways, 3 action items, and owners for each.',
+  },
+  {
+    id: 'idea-storm',
+    label: 'Brainstorm launch ideas',
+    prompt: 'Brainstorm 5 creative product launch ideas for a fintech startup that helps freelancers get paid faster.',
   },
 ];
 
@@ -57,6 +62,9 @@ const QUICK_PROMPTS = [
     description: 'Turn a messy idea into tight talking points.',
     icon: Sparkles,
     prompt: 'Help me craft a five-minute presentation outline about upcoming AI trends for product teams.',
+    eyebrow: 'Present',
+    gradient: 'from-[#f8f1ff] via-[#f3f6ff] to-[#eef9ff]',
+    accent: 'text-[#8b5cf6]',
   },
   {
     id: 'code-review',
@@ -64,6 +72,9 @@ const QUICK_PROMPTS = [
     description: 'Get human-style walkthroughs of tricky snippets.',
     icon: Code2,
     prompt: 'Explain what this React hook is doing and suggest optimizations:\n\nfunction useData(url) {\n  const [data, setData] = useState(null);\n  useEffect(() => {\n    fetch(url).then((res) => res.json()).then(setData);\n  }, [url]);\n  return data;\n}',
+    eyebrow: 'Debug',
+    gradient: 'from-[#eef5ff] via-[#edf9ff] to-[#f4f1ff]',
+    accent: 'text-[#2563eb]',
   },
   {
     id: 'meeting-notes',
@@ -71,6 +82,9 @@ const QUICK_PROMPTS = [
     description: 'Pull action items and owners instantly.',
     icon: NotebookPen,
     prompt: 'Summarize these meeting notes into 3 takeaways with owners and deadlines: \n- Design wants final copy by Friday\n- Backend estimates API v2 ready in 2 sprints\n- Need launch checklist for onboarding.',
+    eyebrow: 'Catch up',
+    gradient: 'from-[#fdf6ed] via-[#f7f1ff] to-[#eef7ff]',
+    accent: 'text-[#f97316]',
   },
   {
     id: 'brainstorm',
@@ -78,6 +92,9 @@ const QUICK_PROMPTS = [
     description: 'Get creative variations fast.',
     icon: Lightbulb,
     prompt: 'Brainstorm 4 fresh campaign ideas for a fintech startup that helps freelancers get paid faster.',
+    eyebrow: 'Create',
+    gradient: 'from-[#ecfdf5] via-[#f1f4ff] to-[#f5efff]',
+    accent: 'text-[#10b981]',
   },
 ];
 
@@ -333,44 +350,70 @@ function App() {
         <main className="flex-1 overflow-y-auto" role="main" aria-label="Chat conversation">
           <div className="max-w-3xl mx-auto w-full px-6 py-8 space-y-4">
             {messages.length === 0 ? (
-              <div className="space-y-6" role="region" aria-label="Welcome screen">
-                <div className="bg-white dark:bg-[#2f2f2f] border border-black/5 dark:border-white/10 rounded-[32px] shadow-sm">
-                  <p className="px-6 pt-6 pb-3 text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">suggestions</p>
-                  <div className="divide-y divide-black/5 dark:divide-white/10">
-                    {FOLLOW_UP_PROMPTS.map(({ id, label, prompt }) => (
+              <div className="space-y-8" role="region" aria-label="Welcome screen">
+                <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+                  <section className="relative overflow-hidden rounded-[36px] border border-black/5 dark:border-white/10 bg-gradient-to-br from-[#f5f2ff] via-[#eef5ff] to-[#f0fbf4] dark:from-[#1d1f2b] dark:via-[#1e2437] dark:to-[#142521] shadow-sm">
+                    <div className="absolute inset-0 opacity-60 pointer-events-none">
+                      <div className="absolute -top-24 -right-12 w-72 h-72 bg-gradient-to-br from-[#b5a8ff] via-transparent to-transparent rounded-full blur-3xl" />
+                      <div className="absolute -bottom-32 -left-10 w-80 h-80 bg-gradient-to-br from-[#8af1d8] via-transparent to-transparent rounded-full blur-3xl" />
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.35),_transparent_60%)]" />
+                    </div>
+                    <div className="relative z-10 p-8 space-y-6">
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="px-3 py-1 rounded-full bg-white/80 dark:bg-white/10 border border-black/5 dark:border-white/10 text-[#202123] dark:text-[#ececf1] text-xs font-semibold tracking-wide">Default</span>
+                        <span className="font-semibold text-[#10a37f] dark:text-[#7ee3c7]">GPT-4o mini</span>
+                        <span>Fast · Reliable · Multimodal</span>
+                      </div>
+                      <div className="space-y-3">
+                        <h1 className="text-3xl sm:text-4xl font-semibold text-[#202123] dark:text-white">How can I help you today?</h1>
+                        <p className="text-base text-gray-600 dark:text-gray-300 max-w-2xl leading-relaxed">
+                          Get instant answers, write or build anything, and take action across docs, images, and audio — all in one familiar ChatGPT space.
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-3" aria-label="Suggested quick actions">
+                        {HERO_ACTIONS.map(({ id, label, prompt }) => (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => handleSendMessage(prompt)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/60 dark:border-white/15 bg-white/90 dark:bg-white/5 text-sm font-medium text-[#202123] dark:text-[#ececf1] shadow-sm hover:bg-white dark:hover:bg-white/10"
+                          >
+                            <span>{label}</span>
+                            <ArrowUpRight className="w-4 h-4" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {QUICK_PROMPTS.map(({ id, title, description, icon: Icon, prompt, eyebrow, gradient, accent }) => (
                       <button
                         key={id}
                         type="button"
                         onClick={() => handleSendMessage(prompt)}
-                        className="w-full flex items-center justify-between px-6 py-4 text-left text-[#202123] dark:text-[#ececf1] hover:bg-[#f5f5f7] dark:hover:bg-[#3a3a3a]"
+                        className={`relative overflow-hidden text-left rounded-3xl border border-black/5 dark:border-white/10 p-5 shadow-sm hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#10a37f]/30 bg-gradient-to-br ${gradient}`}
                       >
-                        <span>{label}</span>
-                        <ArrowUpRight className="w-5 h-5 text-gray-400" />
+                        <div className="absolute -right-6 -top-8 w-32 h-32 bg-white/20 dark:bg-white/5 rounded-full blur-3xl" aria-hidden="true" />
+                        <div className="relative z-10 flex flex-col h-full">
+                          <div className="flex items-start justify-between mb-6">
+                            <div>
+                              <p className="text-[11px] uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">{eyebrow}</p>
+                              <h3 className="mt-2 text-base font-semibold text-[#202123] dark:text-[#ececf1]">{title}</h3>
+                            </div>
+                            <div className={`w-12 h-12 rounded-2xl border border-white/60 dark:border-white/15 bg-white/80 dark:bg-white/5 flex items-center justify-center ${accent}`}>
+                              <Icon className="w-5 h-5" />
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed flex-1">{description}</p>
+                          <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#10a37f] dark:text-[#7ee3c7]">
+                            Open
+                            <ArrowUpRight className="w-4 h-4" />
+                          </span>
+                        </div>
                       </button>
                     ))}
                   </div>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {QUICK_PROMPTS.map(({ id, title, description, icon: Icon, prompt }) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => handleSendMessage(prompt)}
-                      className="text-left bg-white dark:bg-[#2f2f2f] border border-black/5 dark:border-white/10 rounded-3xl p-5 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#10a37f]/30"
-                    >
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="w-10 h-10 rounded-full bg-[#f0f4f9] dark:bg-[#3f3f3f] flex items-center justify-center">
-                          <Icon className="w-5 h-5 text-[#202123] dark:text-[#ececf1]" />
-                        </div>
-                        <svg className="w-6 h-6 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                      <h3 className="text-base font-semibold text-[#202123] dark:text-[#ececf1]">{title}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{description}</p>
-                    </button>
-                  ))}
                 </div>
               </div>
             ) : (
