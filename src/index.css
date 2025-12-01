@@ -14,6 +14,11 @@ body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+body.dark,
+html.dark body {
+  @apply bg-[#212121] text-[#ececf1];
+}
+
 .theme-ocean {
   --theme-primary: 8 145 178;
   --theme-secondary: 6 182 212;
@@ -50,44 +55,67 @@ body {
   @apply text-[#202123] leading-relaxed;
 }
 
+.dark .markdown-content {
+  @apply text-[#ececf1];
+}
+
 /* Headings */
 .markdown-content h1 {
-  @apply text-3xl font-bold mt-6 mb-4 text-slate-800 dark:text-slate-100;
+  @apply text-3xl font-bold mt-6 mb-4 text-[#202123];
 }
 
 .markdown-content h2 {
-  @apply text-2xl font-bold mt-6 mb-3 text-slate-700 dark:text-slate-200;
+  @apply text-2xl font-bold mt-6 mb-3 text-[#202123];
 }
 
 .markdown-content h3 {
-  @apply text-xl font-bold mt-5 mb-3 text-slate-700 dark:text-slate-200;
+  @apply text-xl font-bold mt-5 mb-3 text-[#202123];
 }
 
 .markdown-content h4 {
-  @apply text-lg font-bold mt-4 mb-2 text-slate-700 dark:text-slate-300;
+  @apply text-lg font-bold mt-4 mb-2 text-[#202123];
 }
 
 .markdown-content h5,
 .markdown-content h6 {
-  @apply text-base font-bold mt-4 mb-2 text-slate-700 dark:text-slate-300;
+  @apply text-base font-bold mt-4 mb-2 text-[#202123];
+}
+
+.dark .markdown-content h1,
+.dark .markdown-content h2,
+.dark .markdown-content h3,
+.dark .markdown-content h4,
+.dark .markdown-content h5,
+.dark .markdown-content h6 {
+  @apply text-[#ececf1];
 }
 
 /* Paragraphs */
 .markdown-content p {
-  @apply mb-4 text-[#202123] dark:text-slate-300 leading-relaxed;
+  @apply mb-4 text-[#202123] leading-relaxed;
+}
+
+.dark .markdown-content p {
+  @apply text-[#ececf1];
 }
 
 /* Lists */
 .markdown-content ul {
-  @apply list-disc list-inside mb-3 space-y-1 text-[#202123] dark:text-slate-300;
+  @apply list-disc list-inside mb-3 space-y-1 text-[#202123];
 }
 
 .markdown-content ol {
-  @apply list-decimal list-inside mb-3 space-y-1 text-[#202123] dark:text-slate-300;
+  @apply list-decimal list-inside mb-3 space-y-1 text-[#202123];
 }
 
 .markdown-content li {
-  @apply text-[#202123] dark:text-slate-300;
+  @apply text-[#202123];
+}
+
+.dark .markdown-content ul,
+.dark .markdown-content ol,
+.dark .markdown-content li {
+  @apply text-[#ececf1];
 }
 
 .markdown-content ul ul,
@@ -104,7 +132,11 @@ body {
 
 /* Inline code */
 .markdown-content code:not(pre code) {
-  @apply px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-[#202123] dark:text-slate-200 rounded border border-slate-200 dark:border-slate-600 text-sm font-mono;
+  @apply px-2 py-0.5 bg-slate-100 text-[#202123] rounded border border-slate-200 text-sm font-mono;
+}
+
+.dark .markdown-content code:not(pre code) {
+  @apply bg-[#2f2f2f] text-[#ececf1] border-[#444444];
 }
 
 /* Code blocks */
@@ -121,6 +153,10 @@ body {
   @apply border-l-4 border-[#10a37f] pl-6 py-4 my-4 italic bg-white rounded-r-xl shadow-sm;
 }
 
+.dark .markdown-content blockquote {
+  @apply bg-[#2f2f2f] text-[#ececf1];
+}
+
 /* Horizontal rules */
 .markdown-content hr {
   @apply my-6 border-t-2 border-slate-200 dark:border-slate-700;
@@ -132,27 +168,51 @@ body {
 }
 
 .markdown-content .markdown-table {
-  @apply min-w-full border-collapse bg-white dark:bg-slate-800;
+  @apply min-w-full border-collapse bg-white;
 }
 
 .markdown-content .markdown-table thead {
-  @apply bg-slate-100 dark:bg-slate-700;
+  @apply bg-slate-100;
 }
 
 .markdown-content .markdown-table th {
-  @apply px-4 py-3 text-left font-bold text-slate-800 dark:text-slate-100 border-b-2 border-slate-300 dark:border-slate-600;
+  @apply px-4 py-3 text-left font-bold text-[#202123] border-b-2 border-slate-300;
 }
 
 .markdown-content .markdown-table td {
-  @apply px-4 py-3 text-[#202123] dark:text-slate-300 border-b border-slate-200 dark:border-slate-700;
+  @apply px-4 py-3 text-[#202123] border-b border-slate-200;
 }
 
 .markdown-content .markdown-table tbody tr:nth-child(even) {
-  @apply bg-slate-50/50 dark:bg-slate-900/30;
+  @apply bg-slate-50/50;
 }
 
 .markdown-content .markdown-table tbody tr:hover {
-  @apply bg-blue-50/30 dark:bg-blue-900/20;
+  @apply bg-blue-50/30;
+}
+
+.dark .markdown-content .markdown-table {
+  @apply bg-[#2f2f2f];
+}
+
+.dark .markdown-content .markdown-table thead {
+  @apply bg-[#3f3f3f];
+}
+
+.dark .markdown-content .markdown-table th {
+  @apply text-[#ececf1] border-b-2 border-[#555555];
+}
+
+.dark .markdown-content .markdown-table td {
+  @apply text-[#ececf1] border-b border-[#444444];
+}
+
+.dark .markdown-content .markdown-table tbody tr:nth-child(even) {
+  @apply bg-[#262626];
+}
+
+.dark .markdown-content .markdown-table tbody tr:hover {
+  @apply bg-[#3a3a3a];
 }
 
 /* Math equation styling */
@@ -161,7 +221,11 @@ body {
 }
 
 .math-display {
-  @apply block my-6 text-center overflow-x-auto bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm;
+  @apply block my-6 text-center overflow-x-auto bg-slate-50 p-4 rounded-xl border border-slate-200/50 shadow-sm;
+}
+
+.dark .math-display {
+  @apply bg-[#2f2f2f] border-[#444444];
 }
 
 .math-error {
@@ -179,11 +243,16 @@ body {
 
 /* Strong and emphasis */
 .markdown-content strong {
-  @apply font-bold text-[#202123] dark:text-slate-100;
+  @apply font-bold text-[#202123];
 }
 
 .markdown-content em {
-  @apply italic text-[#202123] dark:text-slate-300;
+  @apply italic text-[#202123];
+}
+
+.dark .markdown-content strong,
+.dark .markdown-content em {
+  @apply text-[#ececf1];
 }
 
 .markdown-content del {

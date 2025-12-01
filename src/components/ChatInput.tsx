@@ -111,12 +111,12 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       )}
 
       <div className="max-w-3xl mx-auto relative">
-        <div className="bg-white border border-black/10 rounded-[32px] px-3 py-2 flex items-end gap-3 shadow-sm">
+        <div className="bg-white dark:bg-[#2f2f2f] border border-black/10 dark:border-white/10 rounded-[32px] px-3 py-2 flex items-end gap-3 shadow-sm">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled}
-            className="p-2.5 text-gray-600 hover:bg-[#f4f4f6] rounded-2xl transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
+            className="p-2.5 text-gray-600 dark:text-gray-300 hover:bg-[#f4f4f6] dark:hover:bg-[#3a3a3a] rounded-2xl transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
             title="Attach files (Images, PDFs, Documents)"
             aria-label="Attach file"
           >
@@ -148,7 +148,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             placeholder="Message ChatGPT..."
             disabled={disabled}
             rows={1}
-            className="flex-1 resize-none px-1 pb-1 pt-2 border-none bg-transparent focus:outline-none focus:ring-0 disabled:text-gray-400 text-[15px] leading-6"
+            className="flex-1 resize-none px-1 pb-1 pt-2 border-none bg-transparent text-[#202123] dark:text-[#ececf1] placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-0 disabled:text-gray-400 text-[15px] leading-6"
             aria-label="Message input"
           />
 
@@ -160,7 +160,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
               className={`p-2.5 rounded-2xl transition-colors ${
                 isTranscribing 
                   ? 'text-blue-500 animate-pulse' 
-                  : 'text-gray-600 hover:bg-[#f4f4f6]'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-[#f4f4f6] dark:hover:bg-[#3a3a3a]'
               } disabled:text-gray-400 disabled:cursor-not-allowed`}
               aria-label={isTranscribing ? 'Transcribing audio...' : 'Voice input'}
               title={isTranscribing ? 'Transcribing audio...' : 'Record audio message'}
@@ -178,7 +178,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           </div>
         </div>
       </div>
-      <p className="max-w-3xl mx-auto text-center text-xs text-gray-500 mt-3">
+      <p className="max-w-3xl mx-auto text-center text-xs text-gray-500 dark:text-gray-400 mt-3">
         ChatGPT can make mistakes. Consider checking important information.
       </p>
     </form>

@@ -144,16 +144,16 @@ export function ConversationSidebar({
   };
 
   return (
-    <aside className="w-72 bg-white text-gray-900 flex flex-col h-full border-r border-black/10">
-      <div className="p-4 space-y-4 border-b border-black/5">
-        <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-gray-500">
+    <aside className="w-72 bg-white dark:bg-[#171717] text-gray-900 dark:text-gray-100 flex flex-col h-full border-r border-black/10 dark:border-white/10">
+      <div className="p-4 space-y-4 border-b border-black/5 dark:border-white/10">
+        <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
           <span>Workspace</span>
-          <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">Free</span>
+          <span className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-[#2f2f2f] text-gray-600 dark:text-gray-300">Free</span>
         </div>
 
         <button
           onClick={onNewConversation}
-          className="w-full bg-[#ececf1] hover:bg-white text-[#202123] py-3 px-4 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors border border-black/10"
+          className="w-full bg-[#ececf1] dark:bg-[#2f2f2f] hover:bg-white dark:hover:bg-[#3a3a3a] text-[#202123] dark:text-[#ececf1] py-3 px-4 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors border border-black/10 dark:border-white/10"
           aria-label="New conversation"
         >
           <Plus className="w-5 h-5" />
@@ -167,10 +167,10 @@ export function ConversationSidebar({
               <button
                 key={action.id}
                 type="button"
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-700 hover:bg-gray-100"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2f2f2f]"
                 aria-label={action.label}
               >
-                <span className="p-2 rounded-xl bg-gray-100">
+                <span className="p-2 rounded-xl bg-gray-100 dark:bg-[#2f2f2f]">
                   <Icon className="w-4 h-4" />
                 </span>
                 <span className="flex-1 text-left font-medium">{action.label}</span>
@@ -180,10 +180,10 @@ export function ConversationSidebar({
           })}
         </div>
 
-        <div className="flex gap-2 text-[13px] text-gray-600">
+        <div className="flex gap-2 text-[13px] text-gray-600 dark:text-gray-300">
           <button
             onClick={handleExport}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            className="flex-1 bg-gray-100 dark:bg-[#2f2f2f] hover:bg-gray-200 dark:hover:bg-[#3a3a3a] text-gray-800 dark:text-gray-200 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
             title="Export conversations"
             aria-label="Export conversations"
           >
@@ -192,7 +192,7 @@ export function ConversationSidebar({
           </button>
           <button
             onClick={handleImport}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            className="flex-1 bg-gray-100 dark:bg-[#2f2f2f] hover:bg-gray-200 dark:hover:bg-[#3a3a3a] text-gray-800 dark:text-gray-200 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
             title="Import conversations"
             aria-label="Import conversations"
           >
@@ -202,10 +202,10 @@ export function ConversationSidebar({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-        <p className="px-2 text-xs uppercase tracking-[0.3em] text-gray-500">Recents</p>
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+        <p className="px-2 text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">Recents</p>
         {conversations.length === 0 ? (
-          <div className="text-center text-sm text-gray-500 py-12">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-12">
             <p>No conversations yet</p>
             <p className="text-xs mt-1">Start chatting to see them appear here.</p>
           </div>
@@ -216,8 +216,8 @@ export function ConversationSidebar({
               onClick={() => onSelectConversation(conversation.id)}
               className={`group relative px-3 py-2 rounded-xl cursor-pointer text-sm transition-all border ${
                 activeConversationId === conversation.id
-                  ? 'bg-[#f3f5f9] text-[#202123] border-[#cfd7e3] shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-100 border-transparent'
+                  ? 'bg-[#f3f5f9] dark:bg-[#2f2f2f] text-[#202123] dark:text-[#ececf1] border-[#cfd7e3] dark:border-[#444444] shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#2f2f2f] border-transparent'
               }`}
               role="button"
               tabIndex={0}
@@ -233,20 +233,20 @@ export function ConversationSidebar({
                       if (e.key === 'Enter') handleSaveEdit(conversation.id);
                       if (e.key === 'Escape') handleCancelEdit();
                     }}
-                    className="flex-1 bg-white border border-black/10 rounded px-2 py-1 text-sm text-gray-800 focus:outline-none"
+                    className="flex-1 bg-white dark:bg-[#2f2f2f] border border-black/10 dark:border-white/20 rounded px-2 py-1 text-sm text-gray-800 dark:text-gray-200 focus:outline-none"
                     autoFocus
                     aria-label="Edit conversation title"
                   />
                   <button
                     onClick={() => handleSaveEdit(conversation.id)}
-                    className="p-1 hover:bg-gray-200 rounded"
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-[#3a3a3a] rounded"
                     aria-label="Save title"
                   >
                     <Check className="w-4 h-4 text-green-500" />
                   </button>
                   <button
                     onClick={handleCancelEdit}
-                    className="p-1 hover:bg-gray-200 rounded"
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-[#3a3a3a] rounded"
                     aria-label="Cancel edit"
                   >
                     <X className="w-4 h-4 text-red-400" />
@@ -255,7 +255,7 @@ export function ConversationSidebar({
               ) : (
                 <>
                   <div className="flex items-center gap-2">
-                    <MessageSquare className={`w-4 h-4 ${activeConversationId === conversation.id ? 'text-[#202123]' : 'text-gray-400'}`} />
+                    <MessageSquare className={`w-4 h-4 ${activeConversationId === conversation.id ? 'text-[#202123] dark:text-[#ececf1]' : 'text-gray-400 dark:text-gray-500'}`} />
                     <div className="flex-1 min-w-0">
                       <h3 className="truncate">{conversation.title}</h3>
                       <p className="text-xs text-gray-400 mt-1">

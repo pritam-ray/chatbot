@@ -275,45 +275,45 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen bg-[#f7f7f8] text-[#202123]">
+    <div className="flex h-screen bg-[#f7f7f8] dark:bg-[#212121] text-[#202123] dark:text-[#ececf1]">
       <ConversationSidebar
         activeConversationId={currentConversationId}
         onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
       />
 
-      <div className="flex flex-col flex-1 bg-[#f7f7f8]">
-        <header className="border-b border-black/5 bg-[#f7f7f8]/95 backdrop-blur-sm" role="banner">
+      <div className="flex flex-col flex-1 bg-[#f7f7f8] dark:bg-[#212121]">
+        <header className="border-b border-black/5 dark:border-white/10 bg-[#f7f7f8]/95 dark:bg-[#212121]/95 backdrop-blur-sm" role="banner">
           <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-3 text-lg font-semibold">
                 <div className="flex items-center gap-2">
                   <span>ChatGPT</span>
-                  <ChevronDown className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                  <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" />
                 </div>
-                <button className="px-3 py-1 rounded-full text-sm font-semibold text-[#6d3ef8] bg-[#f4edff] border border-[#e2d4ff]">
+                <button className="px-3 py-1 rounded-full text-sm font-semibold text-[#6d3ef8] bg-[#f4edff] dark:bg-[#6d3ef8]/20 border border-[#e2d4ff] dark:border-[#6d3ef8]/30">
                   + Free offer
                 </button>
               </div>
-              <p className="text-sm text-gray-500">Azure OpenAI assistant · Always learning</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Azure OpenAI assistant · Always learning</p>
             </div>
             <nav className="flex items-center gap-2" aria-label="Main navigation">
-              <span className="px-3 py-1 text-xs font-medium rounded-full bg-white border border-black/10 text-gray-600">Free Research Preview</span>
+              <span className="px-3 py-1 text-xs font-medium rounded-full bg-white dark:bg-[#2f2f2f] border border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-300">Free Research Preview</span>
               <button
-                className="p-2.5 rounded-xl border border-black/10 bg-white text-gray-700 hover:bg-[#ececf1]"
+                className="p-2.5 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#2f2f2f] text-gray-700 dark:text-gray-200 hover:bg-[#ececf1] dark:hover:bg-[#3f3f3f]"
                 aria-label="Share conversation"
               >
                 <Share2 className="w-4 h-4" />
               </button>
               <button
-                className="p-2.5 rounded-xl border border-black/10 bg-white text-gray-700 hover:bg-[#ececf1]"
+                className="p-2.5 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#2f2f2f] text-gray-700 dark:text-gray-200 hover:bg-[#ececf1] dark:hover:bg-[#3f3f3f]"
                 aria-label="Add collaborators"
               >
                 <UserPlus className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsCodeSandboxOpen(true)}
-                className="p-2.5 rounded-xl border border-black/10 bg-white text-gray-700 hover:bg-[#ececf1]"
+                className="p-2.5 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#2f2f2f] text-gray-700 dark:text-gray-200 hover:bg-[#ececf1] dark:hover:bg-[#3f3f3f]"
                 aria-label="Open JavaScript Sandbox"
               >
                 <Code2 className="w-4 h-4" />
@@ -321,7 +321,7 @@ function App() {
               <ThemeSettings />
               <CacheManager />
               <button
-                className="p-2.5 rounded-xl border border-black/10 bg-white text-gray-700 hover:bg-[#ececf1]"
+                className="p-2.5 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#2f2f2f] text-gray-700 dark:text-gray-200 hover:bg-[#ececf1] dark:hover:bg-[#3f3f3f]"
                 aria-label="More options"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -334,15 +334,15 @@ function App() {
           <div className="max-w-3xl mx-auto w-full px-6 py-8 space-y-4">
             {messages.length === 0 ? (
               <div className="space-y-6" role="region" aria-label="Welcome screen">
-                <div className="bg-white border border-black/5 rounded-[32px] shadow-sm">
-                  <p className="px-6 pt-6 pb-3 text-xs uppercase tracking-[0.2em] text-gray-500">suggestions</p>
-                  <div className="divide-y divide-black/5">
+                <div className="bg-white dark:bg-[#2f2f2f] border border-black/5 dark:border-white/10 rounded-[32px] shadow-sm">
+                  <p className="px-6 pt-6 pb-3 text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">suggestions</p>
+                  <div className="divide-y divide-black/5 dark:divide-white/10">
                     {FOLLOW_UP_PROMPTS.map(({ id, label, prompt }) => (
                       <button
                         key={id}
                         type="button"
                         onClick={() => handleSendMessage(prompt)}
-                        className="w-full flex items-center justify-between px-6 py-4 text-left text-[#202123] hover:bg-[#f5f5f7]"
+                        className="w-full flex items-center justify-between px-6 py-4 text-left text-[#202123] dark:text-[#ececf1] hover:bg-[#f5f5f7] dark:hover:bg-[#3a3a3a]"
                       >
                         <span>{label}</span>
                         <ArrowUpRight className="w-5 h-5 text-gray-400" />
@@ -357,18 +357,18 @@ function App() {
                       key={id}
                       type="button"
                       onClick={() => handleSendMessage(prompt)}
-                      className="text-left bg-white border border-black/5 rounded-3xl p-5 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#10a37f]/30"
+                      className="text-left bg-white dark:bg-[#2f2f2f] border border-black/5 dark:border-white/10 rounded-3xl p-5 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#10a37f]/30"
                     >
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-10 h-10 rounded-full bg-[#f0f4f9] flex items-center justify-center">
-                          <Icon className="w-5 h-5 text-[#202123]" />
+                        <div className="w-10 h-10 rounded-full bg-[#f0f4f9] dark:bg-[#3f3f3f] flex items-center justify-center">
+                          <Icon className="w-5 h-5 text-[#202123] dark:text-[#ececf1]" />
                         </div>
-                        <svg className="w-6 h-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-6 h-6 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
-                      <h3 className="text-base font-semibold text-[#202123]">{title}</h3>
-                      <p className="text-sm text-gray-500 mt-1 leading-relaxed">{description}</p>
+                      <h3 className="text-base font-semibold text-[#202123] dark:text-[#ececf1]">{title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{description}</p>
                     </button>
                   ))}
                 </div>
@@ -379,11 +379,11 @@ function App() {
                   <ChatMessage key={index} message={message} onRunCode={handleRunCode} />
                 ))}
                 {isLoading && (
-                  <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-sm flex gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#10a37f]/10 flex items-center justify-center">
+                  <div className="bg-white dark:bg-[#2f2f2f] border border-black/5 dark:border-white/10 rounded-3xl p-6 shadow-sm flex gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#10a37f]/10 dark:bg-[#10a37f]/20 flex items-center justify-center">
                       <MessageSquare className="w-4 h-4 text-[#10a37f]" />
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-500">
+                    <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                       <span className="w-2 h-2 bg-[#10a37f] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
                       <span className="w-2 h-2 bg-[#10a37f] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
                       <span className="w-2 h-2 bg-[#10a37f] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>

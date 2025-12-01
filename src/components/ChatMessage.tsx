@@ -173,8 +173,8 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
         <div
           className={`rounded-[28px] px-6 py-5 text-[15px] leading-7 shadow-sm ${
             isUser
-              ? 'bg-[#e8edf3] text-[#202123] ml-auto'
-              : 'bg-white border border-black/5 text-[#202123]'
+              ? 'bg-[#e8edf3] dark:bg-[#2f2f2f] text-[#202123] dark:text-[#ececf1] ml-auto'
+              : 'bg-white dark:bg-[#2f2f2f] border border-black/5 dark:border-white/10 text-[#202123] dark:text-[#ececf1]'
           }`}
         >
           {!isUser && <div className="text-sm font-semibold mb-2">ChatGPT</div>}
@@ -184,7 +184,7 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
               {message.attachments && message.attachments.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   {message.attachments.map((attachment) => (
-                    <div key={attachment.id} className="relative rounded-xl overflow-hidden border border-black/10">
+                    <div key={attachment.id} className="relative rounded-xl overflow-hidden border border-black/10 dark:border-white/20">
                       <img 
                         src={attachment.previewUrl || attachment.dataUrl} 
                         alt={attachment.name}
@@ -203,7 +203,7 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
               {message.generatedImages && message.generatedImages.length > 0 && (
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   {message.generatedImages.map((imageUrl, index) => (
-                    <div key={index} className="relative rounded-xl overflow-hidden border border-black/10 group">
+                    <div key={index} className="relative rounded-xl overflow-hidden border border-black/10 dark:border-white/20 group">
                       <img 
                         src={imageUrl} 
                         alt={`Generated image ${index + 1}`}
@@ -216,8 +216,8 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
                         title={`Download generated image ${index + 1}`}
                         aria-label={`Download generated image ${index + 1}`}
                       >
-                        <div className="p-3 bg-white/90 rounded-xl">
-                          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="p-3 bg-white/90 dark:bg-[#2f2f2f]/90 rounded-xl">
+                          <svg className="w-5 h-5 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                           </svg>
                         </div>
@@ -231,12 +231,12 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
         </div>
 
         {!isUser && (
-          <div className="flex items-center justify-end gap-1 text-sm text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center justify-end gap-1 text-sm text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
             {/* Listen button */}
             <button
               type="button"
               onClick={isPlaying ? stop : play}
-              className={`p-2 rounded-full hover:bg-gray-100 ${isPlaying ? 'text-green-600' : 'text-gray-500'}`}
+              className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[#3a3a3a] ${isPlaying ? 'text-green-600' : 'text-gray-500 dark:text-gray-400'}`}
               aria-label={isPlaying ? 'Stop audio' : 'Listen to response'}
               title={isPlaying ? 'Stop audio' : 'Listen to response'}
             >
@@ -253,7 +253,7 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
               <button
                 key={id}
                 type="button"
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-500"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[#3a3a3a] text-gray-500 dark:text-gray-400"
                 aria-label={label}
                 title={`${label} (coming soon)`}
                 disabled
@@ -267,7 +267,7 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
 
       {isUser && (
         <div
-          className="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center ml-4 shrink-0"
+          className="w-10 h-10 rounded-full bg-gray-200 dark:bg-[#3f3f3f] text-gray-700 dark:text-gray-200 flex items-center justify-center ml-4 shrink-0"
           aria-hidden="true"
         >
           <User className="w-5 h-5" />
