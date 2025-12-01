@@ -267,7 +267,7 @@ This project is open source and available under the [MIT License](LICENSE).
 - **Vite Team** for the blazing-fast build tool
 - **TailwindCSS** for the utility-first CSS framework
 - **KaTeX** for beautiful math rendering
-- **marked** and **DOMPurify** for secure markdown parsingggggg
+- **marked** and **DOMPurify** for secure markdown parsing
 
 ## 📧 Contact
 

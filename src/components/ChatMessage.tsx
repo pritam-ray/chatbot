@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   User,
   Bot,
@@ -7,14 +7,75 @@ import {
   Copy,
   RefreshCw,
   Share2,
+  Volume2,
+  Square,
 } from 'lucide-react';
-import { Message } from '../services/azureOpenAI';
+import { Message, synthesizeSpeech } from '../services/azureOpenAI';
 import { renderMarkdownToHTML } from '../utils/markdown';
 import 'katex/dist/katex.min.css';
 
 interface ChatMessageProps {
   message: Message;
   onRunCode?: (code: string) => void;
+}
+
+function useTextToSpeech(text: string) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const play = async () => {
+    try {
+      if (audioUrl) {
+        // Play existing audio
+        if (audioRef.current) {
+          audioRef.current.play();
+          setIsPlaying(true);
+        }
+      } else {
+        // Generate and play new audio
+        setIsPlaying(true);
+        const url = await synthesizeSpeech(text);
+        setAudioUrl(url);
+        
+        const audio = new Audio(url);
+        audioRef.current = audio;
+        
+        audio.onended = () => setIsPlaying(false);
+        audio.onerror = () => {
+          setIsPlaying(false);
+          console.error('Error playing audio');
+        };
+        
+        await audio.play();
+      }
+    } catch (error) {
+      console.error('Error with text-to-speech:', error);
+      setIsPlaying(false);
+    }
+  };
+
+  const stop = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [audioUrl]);
+
+  return { isPlaying, play, stop };
 }
 
 function MarkdownContent({ content, onRunCode }: { content: string; onRunCode?: (code: string) => void }) {
@@ -92,6 +153,7 @@ function MarkdownContent({ content, onRunCode }: { content: string; onRunCode?: 
 
 export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
   const isUser = message.role === 'user';
+  const { isPlaying, play, stop } = useTextToSpeech(message.content);
 
   return (
     <article
@@ -117,14 +179,70 @@ export function ChatMessage({ message, onRunCode }: ChatMessageProps) {
         >
           {!isUser && <div className="text-sm font-semibold mb-2">ChatGPT</div>}
           {isUser ? (
-            <p className="whitespace-pre-wrap">{message.displayContent || message.content}</p>
+            <div className="space-y-3">
+              {/* Display image attachments if present */}
+              {message.attachments && message.attachments.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {message.attachments.map((attachment) => (
+                    <div key={attachment.id} className="relative rounded-xl overflow-hidden border border-black/10">
+                      <img 
+                        src={attachment.previewUrl || attachment.dataUrl} 
+                        alt={attachment.name}
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="whitespace-pre-wrap">{message.displayContent || message.content}</p>
+            </div>
           ) : (
-            <MarkdownContent content={message.content} onRunCode={onRunCode} />
+            <div className="space-y-3">
+              <MarkdownContent content={message.content} onRunCode={onRunCode} />
+              {/* Display generated images if present */}
+              {message.generatedImages && message.generatedImages.length > 0 && (
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  {message.generatedImages.map((imageUrl, index) => (
+                    <div key={index} className="relative rounded-xl overflow-hidden border border-black/10 group">
+                      <img 
+                        src={imageUrl} 
+                        alt={`Generated image ${index + 1}`}
+                        className="w-full h-auto object-cover"
+                      />
+                      <a
+                        href={imageUrl}
+                        download={`generated-image-${index + 1}.png`}
+                        className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        title={`Download generated image ${index + 1}`}
+                        aria-label={`Download generated image ${index + 1}`}
+                      >
+                        <div className="p-3 bg-white/90 rounded-xl">
+                          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                        </div>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
 
         {!isUser && (
           <div className="flex items-center justify-end gap-1 text-sm text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Listen button */}
+            <button
+              type="button"
+              onClick={isPlaying ? stop : play}
+              className={`p-2 rounded-full hover:bg-gray-100 ${isPlaying ? 'text-green-600' : 'text-gray-500'}`}
+              aria-label={isPlaying ? 'Stop audio' : 'Listen to response'}
+              title={isPlaying ? 'Stop audio' : 'Listen to response'}
+            >
+              {isPlaying ? <Square className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </button>
+
             {[
               { id: 'up', icon: ThumbsUp, label: 'Good response' },
               { id: 'down', icon: ThumbsDown, label: 'Bad response' },

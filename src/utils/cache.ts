@@ -79,8 +79,19 @@ function calculateSimilarity(str1: string, str2: string): number {
 }
 
 /**
+ * Generate a hash for attachment to include in cache key
+ */
+function hashAttachments(attachments?: import('../services/azureOpenAI').Attachment[]): string {
+  if (!attachments || attachments.length === 0) return '';
+  
+  return attachments
+    .map(a => `${a.type}:${a.id}:${a.size}`)
+    .join(',');
+}
+
+/**
  * Generate a cache key from conversation context
- * Uses last N messages to create context-aware key
+ * Uses last N messages to create context-aware key (including attachments)
  */
 function generateCacheKey(messages: Message[]): string {
   // Use last 3 messages for context (excluding current user message)
@@ -88,10 +99,12 @@ function generateCacheKey(messages: Message[]): string {
   const currentMessage = messages[messages.length - 1];
   
   const contextString = contextMessages
-    .map(m => `${m.role}:${m.content.substring(0, 100)}`)
+    .map(m => `${m.role}:${m.content.substring(0, 100)}:${hashAttachments(m.attachments)}`)
     .join('|');
   
-  return `${contextString}|${currentMessage.content}`;
+  const currentAttachmentHash = hashAttachments(currentMessage.attachments);
+  
+  return `${contextString}|${currentMessage.content}|${currentAttachmentHash}`;
 }
 
 /**

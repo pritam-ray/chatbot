@@ -10,6 +10,7 @@ import {
   NotebookPen,
   Lightbulb,
   ArrowUpRight,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
@@ -17,7 +18,8 @@ import { CacheManager } from './components/CacheManager';
 import { ThemeSettings } from './components/ThemeSettings';
 import { ConversationSidebar } from './components/ConversationSidebar';
 import { CodeSandbox } from './components/CodeSandbox';
-import { Message, streamChatCompletion } from './services/azureOpenAI';
+import { ImageGenerationPanel } from './components/ImageGenerationPanel';
+import { Message, Attachment, streamChatCompletion } from './services/azureOpenAI';
 import { getCachedResponse, setCachedResponse, cleanExpiredCache } from './utils/cache';
 import { useTheme } from './contexts/ThemeContext';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -85,6 +87,7 @@ function App() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [isCodeSandboxOpen, setIsCodeSandboxOpen] = useState(false);
   const [sandboxCode, setSandboxCode] = useState<string>('');
+  const [showImageGenPanel, setShowImageGenPanel] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toggleTheme } = useTheme();
 
@@ -210,11 +213,12 @@ function App() {
     },
   ]);
 
-  const handleSendMessage = async (content: string, displayContent?: string) => {
+  const handleSendMessage = async (content: string, displayContent?: string, attachments?: Attachment[]) => {
     const userMessage: Message = {
       role: 'user',
       content, // Full content for API
       displayContent: displayContent || content, // Display content for UI
+      attachments: attachments || [],
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -330,24 +334,8 @@ function App() {
           <div className="max-w-3xl mx-auto w-full px-6 py-8 space-y-4">
             {messages.length === 0 ? (
               <div className="space-y-6" role="region" aria-label="Welcome screen">
-                <div className="bg-white border border-black/5 rounded-[32px] p-10 shadow-sm space-y-4">
-                  <div className="flex items-center gap-3 text-gray-500 text-sm">
-                    <div className="w-10 h-10 rounded-full bg-[#10a37f]/10 flex items-center justify-center">
-                      <MessageSquare className="w-5 h-5 text-[#10a37f]" />
-                    </div>
-                    <div className="flex items-center gap-1 text-[15px] text-[#202123]">
-                      <span>ChatGPT</span>
-                      <span role="img" aria-label="smile">🙂</span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-semibold">Hi! How can I help you today?</p>
-                    <p className="text-gray-500 mt-1">Follow up with one of these quick ideas.</p>
-                  </div>
-                </div>
-
                 <div className="bg-white border border-black/5 rounded-[32px] shadow-sm">
-                  <p className="px-6 pt-6 pb-3 text-xs uppercase tracking-[0.2em] text-gray-500">Follow up</p>
+                  <p className="px-6 pt-6 pb-3 text-xs uppercase tracking-[0.2em] text-gray-500">suggestions</p>
                   <div className="divide-y divide-black/5">
                     {FOLLOW_UP_PROMPTS.map(({ id, label, prompt }) => (
                       <button
@@ -420,6 +408,32 @@ function App() {
           }}
         />
       )}
+
+      {showImageGenPanel && (
+        <ImageGenerationPanel
+          onClose={() => setShowImageGenPanel(false)}
+          onImagesGenerated={(images) => {
+            // Add generated images as an assistant message
+            const imageMessage: Message = {
+              role: 'assistant',
+              content: 'I generated the images you requested:',
+              generatedImages: images,
+            };
+            setMessages(prev => [...prev, imageMessage]);
+            scrollToBottom();
+          }}
+        />
+      )}
+
+      {/* Floating Action Button for Image Generation */}
+      <button
+        onClick={() => setShowImageGenPanel(true)}
+        className="fixed bottom-24 right-8 w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-40"
+        title="Generate Images with DALL-E"
+        aria-label="Generate Images"
+      >
+        <ImageIcon className="w-6 h-6" />
+      </button>
     </div>
   );
 }

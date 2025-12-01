@@ -4,9 +4,12 @@ import { createPortal } from 'react-dom';
 import { extractTextFromFile } from '../utils/pdfExtractor';
 import { parseTableFile, formatTableSummary, ParsedTable } from '../utils/tableParser';
 import { TableEditor } from './TableEditor';
+import { ImageAttachmentManager } from './ImageAttachmentManager';
+import { AudioRecorder } from './AudioRecorder';
+import { Attachment, transcribeAudio } from '../services/azureOpenAI';
 
 interface ChatInputProps {
-  onSend: (message: string, displayMessage?: string, fileName?: string) => void;
+  onSend: (message: string, displayMessage?: string, attachments?: Attachment[]) => void;
   disabled: boolean;
 }
 
@@ -18,24 +21,60 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [isTableFile, setIsTableFile] = useState(false);
   const [tableData, setTableData] = useState<ParsedTable | null>(null);
   const [showTableEditor, setShowTableEditor] = useState(false);
+  const [imageAttachments, setImageAttachments] = useState<Attachment[]>([]);
+  const [showAudioRecorder, setShowAudioRecorder] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert('File size must be less than 10MB');
+    if (file.size > 20 * 1024 * 1024) {
+      alert('File size must be less than 20MB');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
       return;
     }
 
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(extension || '');
+
+    // Handle image files
+    if (isImage) {
+      try {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target?.result as string;
+          const newAttachment: Attachment = {
+            id: `img-${Date.now()}`,
+            type: 'image',
+            name: file.name,
+            mimeType: file.type,
+            size: file.size,
+            dataUrl,
+            previewUrl: dataUrl,
+            source: 'upload',
+          };
+          setImageAttachments(prev => [...prev, newAttachment]);
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error loading image:', error);
+        alert('Failed to load image. Please try again.');
+      } finally {
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+      return;
+    }
+
+    // Handle document files
     setAttachedFile(file);
     setIsExtractingFile(true);
 
-    const extension = file.name.split('.').pop()?.toLowerCase();
     const isTable = extension === 'csv' || extension === 'xlsx' || extension === 'xls';
     setIsTableFile(isTable);
 
@@ -94,8 +133,27 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     setInput('');
   };
 
+  const handleAudioRecordingComplete = async (audioBlob: Blob, duration: number) => {
+    setShowAudioRecorder(false);
+    setIsTranscribing(true);
+    
+    try {
+      const transcribedText = await transcribeAudio(audioBlob);
+      setInput(prev => prev ? `${prev} ${transcribedText}` : transcribedText);
+    } catch (error) {
+      console.error('Error transcribing audio:', error);
+      alert('Failed to transcribe audio. Please try again or type your message.');
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const handleCancelAudioRecording = () => {
+    setShowAudioRecorder(false);
+  };
+
   const sendMessage = () => {
-    if ((input.trim() || fileContent) && !disabled && !isExtractingFile) {
+    if ((input.trim() || fileContent || imageAttachments.length > 0) && !disabled && !isExtractingFile) {
       const userInput = input.trim();
       let fullContent = userInput;
       let displayContent = userInput;
@@ -107,9 +165,13 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         displayContent = userInput ? `${userInput}\n\n📎 Attached: ${attachedFile?.name}` : `📎 Attached: ${attachedFile?.name}`;
       }
       
-      onSend(fullContent, displayContent, attachedFile?.name);
+      // Don't add image count text since images are displayed in ChatMessage component
+      // The attachments will be rendered visually in the message bubble
+      
+      onSend(fullContent, displayContent, imageAttachments);
       setInput('');
       handleRemoveFile();
+      setImageAttachments([]);
     }
   };
 
@@ -176,6 +238,16 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         </div>
       )}
 
+      {imageAttachments.length > 0 && (
+        <div className="max-w-3xl mx-auto mb-4">
+          <ImageAttachmentManager
+            attachments={imageAttachments}
+            onAttachmentsChange={setImageAttachments}
+            disabled={disabled || isExtractingFile}
+          />
+        </div>
+      )}
+
       <div className="max-w-3xl mx-auto relative">
         <div className="bg-white border border-black/10 rounded-[32px] px-3 py-2 flex items-end gap-3 shadow-sm">
           <button
@@ -183,7 +255,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isExtractingFile}
             className="p-2.5 text-gray-600 hover:bg-[#f4f4f6] rounded-2xl transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
-            title="Attach file (PDF, TXT, CSV, XLSX)"
+            title="Attach file (Images, PDF, TXT, CSV, XLSX)"
             aria-label="Attach file"
           >
             <Paperclip className="w-5 h-5" />
@@ -193,13 +265,13 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             ref={fileInputRef}
             type="file"
             onChange={handleFileSelect}
-            accept=".pdf,.txt,.md,.doc,.docx,.csv,.xlsx,.xls"
+            accept=".pdf,.txt,.md,.doc,.docx,.csv,.xlsx,.xls,.jpg,.jpeg,.png,.gif,.webp,.bmp"
             className="hidden"
             aria-label="Upload file"
             aria-describedby="file-types-description"
           />
           <span id="file-types-description" className="sr-only">
-            Supported file types: PDF, TXT, MD, DOC, DOCX, CSV, XLSX, XLS
+            Supported file types: PDF, TXT, MD, DOC, DOCX, CSV, XLSX, XLS, JPG, PNG, GIF, WebP
           </span>
 
           <textarea
@@ -221,16 +293,21 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           <div className="flex items-center gap-1">
             <button
               type="button"
-              disabled
-              className="p-2.5 rounded-2xl text-gray-400"
-              aria-label="Voice input coming soon"
-              title="Voice input coming soon"
+              onClick={() => setShowAudioRecorder(true)}
+              disabled={disabled || isExtractingFile || isTranscribing}
+              className={`p-2.5 rounded-2xl transition-colors ${
+                isTranscribing 
+                  ? 'text-blue-500 animate-pulse' 
+                  : 'text-gray-600 hover:bg-[#f4f4f6]'
+              } disabled:text-gray-400 disabled:cursor-not-allowed`}
+              aria-label={isTranscribing ? 'Transcribing audio...' : 'Voice input'}
+              title={isTranscribing ? 'Transcribing audio...' : 'Record audio message'}
             >
               <Mic className="w-5 h-5" />
             </button>
             <button
               type="submit"
-              disabled={disabled || (!input.trim() && !fileContent) || isExtractingFile}
+              disabled={disabled || (!input.trim() && !fileContent && imageAttachments.length === 0) || isExtractingFile}
               className="w-11 h-11 bg-[#10a37f] text-white rounded-full flex items-center justify-center hover:bg-[#0d805f] focus:outline-none focus:ring-2 focus:ring-[#0d805f]/40 disabled:bg-gray-400 disabled:cursor-not-allowed"
               aria-label="Send message"
             >
@@ -251,6 +328,18 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           onSendToAI={handleSendEditedTable}
           onClose={() => setShowTableEditor(false)}
         />,
+        document.body
+      )}
+
+      {showAudioRecorder && createPortal(
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="max-w-2xl w-full">
+            <AudioRecorder
+              onRecordingComplete={handleAudioRecordingComplete}
+              onCancel={handleCancelAudioRecording}
+            />
+          </div>
+        </div>,
         document.body
       )}
     </>
