@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { X, Image as ImageIcon, Upload, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { X, FileText } from 'lucide-react';
 import { Attachment } from '../services/azureOpenAI';
 
 interface ImageAttachmentManagerProps {
@@ -13,7 +13,6 @@ export function ImageAttachmentManager({
   onAttachmentsChange,
   disabled = false,
 }: ImageAttachmentManagerProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const imageAttachments = attachments.filter(a => a.type === 'image');

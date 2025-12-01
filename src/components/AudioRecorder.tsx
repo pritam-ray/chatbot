@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Trash2, Send } from 'lucide-react';
 
 interface AudioRecorderProps {
-  onRecordingComplete: (audioBlob: Blob, duration: number) => void;
+  onRecordingComplete: (audioBlob: Blob) => void;
   onCancel: () => void;
 }
 
@@ -114,7 +114,7 @@ export function AudioRecorder({ onRecordingComplete, onCancel }: AudioRecorderPr
 
   const sendRecording = () => {
     if (audioBlob) {
-      onRecordingComplete(audioBlob, recordingTime);
+      onRecordingComplete(audioBlob);
     }
   };
 

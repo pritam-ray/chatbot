@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image as ImageIcon, Sparkles, Download, Copy, X } from 'lucide-react';
+import { Sparkles, Download, Copy, X } from 'lucide-react';
 import { generateImages, ImageGenerationOptions } from '../services/azureOpenAI';
 
 interface ImageGenerationPanelProps {

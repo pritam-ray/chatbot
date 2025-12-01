@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Send, Paperclip, X, Mic } from 'lucide-react';
+import { Send, Paperclip, Mic } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { ImageAttachmentManager } from './ImageAttachmentManager';
 import { AudioRecorder } from './AudioRecorder';
@@ -59,7 +59,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     }
   };
 
-  const handleAudioRecordingComplete = async (audioBlob: Blob, duration: number) => {
+  const handleAudioRecordingComplete = async (audioBlob: Blob) => {
     setShowAudioRecorder(false);
     setIsTranscribing(true);
     

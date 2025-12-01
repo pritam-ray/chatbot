@@ -238,3 +238,37 @@ html.dark {
 *:focus-visible {
   @apply outline-2 outline-offset-2 outline-blue-500 dark:outline-blue-400;
 }
+
+/* Footnote styling */
+.markdown-content .footnotes {
+  @apply mt-8 pt-4 border-t border-gray-200 text-sm;
+}
+
+.markdown-content .footnotes ol {
+  @apply pl-5;
+}
+
+.markdown-content .footnotes li {
+  @apply mb-2;
+}
+
+.markdown-content .footnote-ref {
+  @apply text-blue-600 hover:text-blue-800 no-underline;
+  font-size: 0.75em;
+  vertical-align: super;
+  font-weight: 600;
+}
+
+.markdown-content .footnote-backref {
+  @apply text-blue-600 hover:text-blue-800 ml-1;
+  text-decoration: none;
+}
+
+/* Emoji styling */
+.markdown-content img.emoji {
+  @apply inline-block align-middle;
+  height: 1.2em;
+  width: 1.2em;
+  margin: 0 0.1em;
+  vertical-align: -0.1em;
+}
