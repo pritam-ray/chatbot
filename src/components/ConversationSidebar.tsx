@@ -258,7 +258,7 @@ export function ConversationSidebar({
                     <MessageSquare className={`w-4 h-4 ${activeConversationId === conversation.id ? 'text-[#202123] dark:text-[#ececf1]' : 'text-gray-400 dark:text-gray-500'}`} />
                     <div className="flex-1 min-w-0">
                       <h3 className="truncate">{conversation.title}</h3>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                         {formatDate(conversation.updatedAt)} • {conversation.messages.length} messages
                       </p>
                     </div>
@@ -267,31 +267,31 @@ export function ConversationSidebar({
                   <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={(e) => handlePin(conversation.id, e)}
-                      className="p-1.5 hover:bg-gray-200 rounded"
+                      className="p-1.5 hover:bg-gray-200 dark:hover:bg-[#3a3a3a] rounded"
                       title={conversation.pinned ? 'Unpin' : 'Pin'}
                       aria-label={conversation.pinned ? 'Unpin conversation' : 'Pin conversation'}
                     >
                       <Pin
                         className={`w-3.5 h-3.5 ${
-                          conversation.pinned ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400'
+                          conversation.pinned ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400 dark:text-gray-500'
                         }`}
                       />
                     </button>
                     <button
                       onClick={(e) => handleEdit(conversation, e)}
-                      className="p-1.5 hover:bg-gray-200 rounded"
+                      className="p-1.5 hover:bg-gray-200 dark:hover:bg-[#3a3a3a] rounded"
                       title="Rename"
                       aria-label="Rename conversation"
                     >
-                      <Edit2 className="w-3.5 h-3.5 text-gray-400" />
+                      <Edit2 className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                     </button>
                     <button
                       onClick={(e) => handleDelete(conversation.id, e)}
-                      className="p-1.5 hover:bg-gray-200 rounded"
+                      className="p-1.5 hover:bg-gray-200 dark:hover:bg-[#3a3a3a] rounded"
                       title="Delete"
                       aria-label="Delete conversation"
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                      <Trash2 className="w-3.5 h-3.5 text-red-400 dark:text-red-500" />
                     </button>
                   </div>
                 </>
@@ -309,7 +309,7 @@ export function ConversationSidebar({
           <div className="w-9 h-9 rounded-full bg-white dark:bg-[#3f3f3f] border border-black/5 dark:border-white/10 flex items-center justify-center font-semibold">PR</div>
           <div className="text-sm">
             <p className="font-medium text-[#202123]">Pritam Ray</p>
-            <p className="text-gray-500 text-xs">pritam@example.com</p>
+            <p className="text-gray-500 dark:text-gray-400 text-xs">pritam@example.com</p>
           </div>
         </div>
       </div>

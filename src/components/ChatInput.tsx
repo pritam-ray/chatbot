@@ -170,7 +170,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             <button
               type="submit"
               disabled={disabled || (!input.trim() && imageAttachments.length === 0)}
-              className="w-11 h-11 bg-[#10a37f] text-white rounded-full flex items-center justify-center hover:bg-[#0d805f] focus:outline-none focus:ring-2 focus:ring-[#0d805f]/40 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-11 h-11 bg-[#10a37f] text-white rounded-full flex items-center justify-center hover:bg-[#0d805f] focus:outline-none focus:ring-2 focus:ring-[#0d805f]/40 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
               aria-label="Send message"
             >
               <Send className="w-5 h-5" aria-hidden="true" />

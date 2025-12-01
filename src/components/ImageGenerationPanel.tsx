@@ -76,7 +76,7 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
               <Sparkles className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Generate Images</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Generate Images</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">Create images with DALL-E 3</p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
                 <Copy className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               Press Ctrl+Enter to generate
             </p>
           </div>
@@ -206,7 +206,7 @@ export function ImageGenerationPanel({ onClose, onImagesGenerated }: ImageGenera
           {/* Generated Images */}
           {generatedImages.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Generated Images</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Generated Images</h3>
               <div className="grid grid-cols-1 gap-4">
                 {generatedImages.map((imageUrl, index) => (
                   <div key={index} className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-lg">

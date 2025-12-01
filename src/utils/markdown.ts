@@ -277,7 +277,6 @@ marked.use(markedEmoji({
     policecar: '🚓',
     firetruck: '🚒',
     ambulance: '🚑',
-    toolbox: '🧰',
     pill: '💊',
     syringe: '💉',
     bookmark: '🔖',

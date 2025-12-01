@@ -130,7 +130,7 @@ export function TableEditor({ initialHeaders, initialRows, onSendToAI, onClose }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 space-y-4 max-h-[80vh] flex flex-col">
+    <div className="bg-white dark:bg-[#2f2f2f] rounded-xl shadow-lg p-6 space-y-4 max-h-[80vh] flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export function TableEditor({ initialHeaders, initialRows, onSendToAI, onClose }
             <h3 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
               Table Editor
             </h3>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-600 dark:text-slate-300">
               {rows.length} rows × {headers.length} columns
               {hasChanges && <span className="text-orange-600 ml-2">• Modified</span>}
             </p>
@@ -150,10 +150,10 @@ export function TableEditor({ initialHeaders, initialRows, onSendToAI, onClose }
         {onClose && (
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 dark:hover:bg-[#3a3a3a] rounded-lg transition-colors"
             aria-label="Close editor"
           >
-            <X className="w-5 h-5 text-slate-600" />
+            <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           </button>
         )}
       </div>
@@ -197,9 +197,9 @@ export function TableEditor({ initialHeaders, initialRows, onSendToAI, onClose }
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-gradient-to-r from-slate-100 to-blue-50 sticky top-0">
             <tr>
-              <th className="w-12 px-2 py-2 text-center text-xs font-medium text-slate-500">#</th>
+              <th className="w-12 px-2 py-2 text-center text-xs font-medium text-slate-500 dark:text-slate-400">#</th>
               {headers.map((header, colIndex) => (
-                <th key={colIndex} className="px-4 py-3 text-left font-bold text-slate-800 relative group">
+                <th key={colIndex} className="px-4 py-3 text-left font-bold text-slate-800 dark:text-slate-200 relative group">
                   {editingCell?.row === -1 && editingCell?.col === colIndex ? (
                     <div className="flex items-center gap-1">
                       <input
@@ -243,12 +243,12 @@ export function TableEditor({ initialHeaders, initialRows, onSendToAI, onClose }
               <th className="w-12"></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-slate-200">
+          <tbody className="bg-white dark:bg-[#2f2f2f] divide-y divide-slate-200 dark:divide-white/10">
             {rows.map((row, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-slate-50 group">
-                <td className="px-2 py-2 text-center text-xs text-slate-500 font-medium">{rowIndex + 1}</td>
+              <tr key={rowIndex} className="hover:bg-slate-50 dark:hover:bg-[#3a3a3a] group">
+                <td className="px-2 py-2 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">{rowIndex + 1}</td>
                 {row.map((cell, colIndex) => (
-                  <td key={colIndex} className="px-4 py-3 text-slate-700">
+                  <td key={colIndex} className="px-4 py-3 text-slate-700 dark:text-slate-300">
                     {editingCell?.row === rowIndex && editingCell?.col === colIndex ? (
                       <div className="flex items-center gap-1">
                         <input
@@ -272,7 +272,7 @@ export function TableEditor({ initialHeaders, initialRows, onSendToAI, onClose }
                         className="cursor-pointer hover:bg-blue-50 px-2 py-1 rounded transition-colors"
                         title="Click to edit"
                       >
-                        {cell || <span className="text-slate-400 italic">empty</span>}
+                        {cell || <span className="text-slate-400 dark:text-slate-500 italic">empty</span>}
                       </div>
                     )}
                   </td>
@@ -293,7 +293,7 @@ export function TableEditor({ initialHeaders, initialRows, onSendToAI, onClose }
       </div>
 
       {/* Footer Info */}
-      <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg">
+      <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-[#1a1a1a] p-3 rounded-lg">
         💡 <strong>Tip:</strong> Click any cell to edit. Press Enter to save, Escape to cancel.
         {hasChanges && <span className="text-orange-600 ml-2">You have unsaved changes.</span>}
       </div>
